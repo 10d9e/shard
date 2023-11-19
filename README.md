@@ -39,7 +39,7 @@ This command starts 'mpcnet' as a bootstrapper node, listening on address '/ip4/
 
 **3. Start Provider Nodes**
 
-You'll need multiple provider nodes to participate in the network. To start a provider node, open multiple terminals (as many as needed) and run the following command in each terminal:
+You'll need multiple provider nodes to participate in the network. (To run locally we will just use an in-memory database, however, in a real world scenario, we would use the `db-path` option to define the path for share persistence.) To start a provider node, open multiple terminals (as many as needed) and run the following command in each terminal:
 
 ```bash
 ./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide
@@ -52,7 +52,34 @@ Each command starts a provider node, and they all connect to the bootstrapper no
 To interact with the network, you'll need a client node. Open another terminal and run the following command:
 
 ```bash
-./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 2 --shares 5 --secret butterbeer --key test --debug
+❯ ./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 2 --shares 5 --secret butterbeer --key test --debug
+
+🐛 [debug] shares: 
+  6720c971ea73b326ea88
+  61461f77eb862dafeb24
+  6413a2726487fcec64de
+  6eb9c5786785436a6737
+  6d8aae7be9710ca0e961
+✂️  Secret has been split and distributed across network.
+    key: "test"
+    threshold: 2
+    providers: {
+    PeerId(
+        "12D3KooWRbMntkocaizeD29DyhwZ5oujjRWJY8uTaUb2LkhrPF6W",
+    ),
+    PeerId(
+        "12D3KooWEVAbvQvN3iH68DQW3wVDzHEwNyfLo7deW1jEQBGY1rkd",
+    ),
+    PeerId(
+        "12D3KooWLP5k1NLj4F5KahMZk253Ndsu6jjNAfkeAFTjNcMAPJys",
+    ),
+    PeerId(
+        "12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X",
+    ),
+    PeerId(
+        "12D3KooWLbyBNppB3nLez7kTeD9c1JeYivDwUVUYoJeHgQHWdKP9",
+    ),
+}
 ```
 
 This command splits a secret into 5 shares with a threshold of 2 and broadcasts them to the network. You can optionally view the shares using the `--debug` flag.
@@ -62,7 +89,24 @@ This command splits a secret into 5 shares with a threshold of 2 and broadcasts 
 To query the network for all nodes hosting shares for a specific key (in this case, 'test'), use the following command:
 
 ```bash
-./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
+❯ ./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
+✂️  Share Providers: {
+    PeerId(
+        "12D3KooWEVAbvQvN3iH68DQW3wVDzHEwNyfLo7deW1jEQBGY1rkd",
+    ),
+    PeerId(
+        "12D3KooWRbMntkocaizeD29DyhwZ5oujjRWJY8uTaUb2LkhrPF6W",
+    ),
+    PeerId(
+        "12D3KooWLbyBNppB3nLez7kTeD9c1JeYivDwUVUYoJeHgQHWdKP9",
+    ),
+    PeerId(
+        "12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X",
+    ),
+    PeerId(
+        "12D3KooWLP5k1NLj4F5KahMZk253Ndsu6jjNAfkeAFTjNcMAPJys",
+    ),
+}
 ```
 
 This command retrieves information about nodes hosting shares for the specified key.
@@ -72,7 +116,8 @@ This command retrieves information about nodes hosting shares for the specified 
 The refresh command can be run as many times as you want, and it doesn't require client interaction. Use the following command to refresh shares:
 
 ```bash
-./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 2 --size 10
+❯ ./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 2 --size 10
+🔄 Refreshed 5 shares for key: "test"
 ```
 
 This command refreshes the shares for the 'test' key with a threshold of 2 and a size of 10.
@@ -82,10 +127,14 @@ This command refreshes the shares for the 'test' key with a threshold of 2 and a
 To reassemble the secret, you'll need to randomly select 2 providers corresponding to the threshold. Use the following command:
 
 ```bash
-./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test --threshold 2 --debug
+❯ ./target/release/mpcnet --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test --threshold 2 --debug
+🐛 [debug] shares: 
+  9f236113dd50807ae895
+  c2478ca20d6c3c9b1e2f
+🔑 secret: "butterbeer"
 ```
 
-This command combines the shares from the selected providers to reassemble the secret. You can use the `--debug` flag to view additional information during the process.
+This command combines the shares from the selected providers to reassemble the secret. You can use the `--debug` flag to view share bytes during the process.
 
 Each node logs output as it interacts with the network:
 
