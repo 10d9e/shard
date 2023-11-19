@@ -193,6 +193,65 @@ Refresh the shares to enhance their security. This command requires the key asso
 mpcnet refresh --key <KEY> --threshold <THRESHOLD> --size <SIZE>
 ```
 
+#### Docker
+
+A docker-based testnet is provided that includes 10 nodes and a client container for testing commands.
+
+### 1. Start the mpcnet test network
+
+```bash
+docker-compose up --build
+```
+
+### 2. Execute the commands within the testnet
+
+```bash
+docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 7 --shares 10 --secret butterbeer --key test
+docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
+docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 7 --size 10
+docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test --threshold 7
+
+```
+
+Observe the node participants log statements with each command:
+
+```bash
+provider_2      | 🚀 Registered share for key: "test".
+bootstrapper_1  | 🚀 Registered share for key: "test".
+provider_5      | 🚀 Registered share for key: "test".
+provider_9      | 🚀 Registered share for key: "test".
+provider_3      | 🚀 Registered share for key: "test".
+provider_8      | 🚀 Registered share for key: "test".
+provider_6      | 🚀 Registered share for key: "test".
+provider_7      | 🚀 Registered share for key: "test".
+provider_4      | 🚀 Registered share for key: "test".
+provider_1      | 🚀 Registered share for key: "test".
+provider_2      | 💡 Sent share for key: "test".
+provider_7      | 💡 Sent share for key: "test".
+provider_9      | 💡 Sent share for key: "test".
+provider_3      | 💡 Sent share for key: "test".
+provider_4      | 💡 Sent share for key: "test".
+provider_8      | 💡 Sent share for key: "test".
+bootstrapper_1  | 💡 Sent share for key: "test".
+provider_3      | 🔄 Refreshed share for key: "test"
+provider_7      | 🔄 Refreshed share for key: "test"
+provider_6      | 🔄 Refreshed share for key: "test"
+bootstrapper_1  | 🔄 Refreshed share for key: "test"
+provider_8      | 🔄 Refreshed share for key: "test"
+provider_4      | 🔄 Refreshed share for key: "test"
+provider_2      | 🔄 Refreshed share for key: "test"
+provider_9      | 🔄 Refreshed share for key: "test"
+provider_1      | 🔄 Refreshed share for key: "test"
+provider_5      | 🔄 Refreshed share for key: "test"
+provider_1      | 💡 Sent share for key: "test".
+bootstrapper_1  | 💡 Sent share for key: "test".
+provider_7      | 💡 Sent share for key: "test".
+provider_6      | 💡 Sent share for key: "test".
+provider_5      | 💡 Sent share for key: "test".
+provider_9      | 💡 Sent share for key: "test".
+provider_8      | 💡 Sent share for key: "test".
+```
+
 ## Design
 
 ### Description
