@@ -146,7 +146,30 @@ mpcnet refresh --key <KEY> --threshold <THRESHOLD> --size <SIZE>
 
 ## Design
 
-## libp2p
+### Description
+
+In the 'mpcnet' application, network peers function in dual roles: as share providers or as share retrievers. Share providers use `libp2p-kad` to advertise available shares on a Distributed Hash Table (DHT), making them discoverable to others in the network. Conversely, share retrievers use the same system to find and acquire specific shares from any peer in the network.
+
+## Operational Flow
+
+Here's an overview of how 'mpcnet' manages share distribution:
+
+- **Share Providers**: Consider two nodes, A and B, assuming the roles of share providers. Node A holds share FA, while Node B holds share FB. They broadcast their availability as share providers on the DHT via `libp2p-kad`. This step is crucial as it makes their shares discoverable to other network peers.
+
+- **Share Retrievers**: Take Node C as an example of a share retriever. Its goal is to obtain either share FA or FB. It leverages `libp2p-kad` for locating the providers of these shares on the DHT, even without a direct connection to them. Once the provider is identified, Node C initiates a connection and requests the share using `libp2p-request-response`.
+
+- **Role of DHT in Connectivity**: The DHT is a pivotal element in 'mpcnet' for share distribution. It serves as a repository and discovery service for information about share providers. The interconnected nature of nodes through the DHT enhances the efficacy of share discovery and acquisition.
+
+## Architectural Features
+
+'mpcnet' is characterized by several key architectural features:
+
+- **User-Friendly Async/Await Interface**: The application is equipped with a streamlined and replicable async/await interface. This design provides a smooth interaction with the network layer for users. The `Client` module is specifically designed to encompass all necessary network communication functionalities.
+
+- **Optimized Network Management**: 'mpcnet' employs a singular task-driven approach for its network layer. This strategic design choice promotes efficient network communication, circumventing the need for complex synchronization or locking mechanisms.
+
+
+### libp2p as the under-pinning p2p framework
 
 Using libp2p for building the 'mpcnet' node offers several advantages due to the design and features of libp2p. Here's a detailed explanation of the benefits:
 
@@ -168,9 +191,9 @@ Using libp2p for building the 'mpcnet' node offers several advantages due to the
 
 9. **Customization and Extensibility**: Due to its modular design, libp2p can be easily extended with custom protocols and features. This allows for the creation of tailored solutions that fit the specific requirements of 'mpcnet'.
 
-10. **Community and Support**: libp2p is backed by a strong community and is part of the broader IPFS ecosystem. This community provides support, contributes to the continuous improvement of the library, and ensures that it stays up-to-date with the latest technological advancements.
-
 The choice of libp2p for building 'mpcnet' provides a solid foundation for creating a secure, efficient, and scalable decentralized network, with the flexibility to adapt to various use cases and environments.
+
+## Theory
 
 ### Shamir's Secret Sharing (SSS)
 
