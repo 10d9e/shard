@@ -328,7 +328,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             // if the debug flag is set, print the shares
             if debug {
-                println!("🔑 shares: {:#?}", shares_map);
+                println!("🐛 [debug] shares: ");
+                // print the shares in a more readable hex format
+                for (_, v) in shares_map.iter() {
+                    println!("  {}", hex::encode(v));
+                }
             }
 
             println!(
@@ -408,7 +412,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 });
 
             if debug {
-                println!("🔑 shares: {:#?}", split_shares);
+                println!("🐛 [debug] shares: ");
+                // print the shares in a more readable hex format
+                for (_, v) in split_shares.iter() {
+                    println!("  {}", hex::encode(v));
+                }
             }
 
             println!("✂️  Secret has been split and distributed across network.");
