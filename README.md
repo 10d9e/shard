@@ -129,6 +129,17 @@ Refresh the shares to enhance their security. This command requires the key asso
 mpcnet refresh --key <KEY> --threshold <THRESHOLD> --size <SIZE>
 ```
 
+Each node logs output as it interacts with the network:
+
+```bash
+🚀 Registered share for key: "test".
+🔄 Refreshed share for key: "test"
+🔄 Refreshed share for key: "test"
+🔄 Refreshed share for key: "test"
+🔄 Refreshed share for key: "test"
+💡 Sent share for key: "test".
+```
+
 ### Shamir's Secret Sharing (SSS)
 
 Shamir's Secret Sharing is a cryptographic technique developed by Adi Shamir. It enables a secret to be divided into multiple shares, distributed to participants, such that only a specified number of shares (threshold) can reconstruct the original secret. This approach ensures that the secret is secure even if some shares are compromised.
