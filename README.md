@@ -18,7 +18,7 @@ To use MPCNet, follow these steps:
 
 ## Usage
 
-Install rust, `cargo build --release`, ask for `--help`. (more details on creating a localnet and docker-based testnet below)
+Install rust, `cargo build --release`, ask for `--help`. (more details on creating a [localnet](https://github.com/jlogelin/mpcnet#example-5-node-local-network) and [docker-based testnet](https://github.com/jlogelin/mpcnet#example-10-node-docker-network) below)
 
 ```bash
 ❯ mpcnet --help
