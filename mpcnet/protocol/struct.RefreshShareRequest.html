@@ -14,13 +14,13 @@ typically to enhance their security.</p>
 <li><code>sender</code> - A byte vector representing the sender of the request.</li>
 </ul>
 <h2 id="examples"><a href="#examples">Examples</a></h2>
-<p>Creating a new <code>RefreshSharesRequest</code>:</p>
+<p>Creating a new <code>RefreshShareRequest</code>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>mpcnet::sss::Polynomial;
-<span class="kw">use </span>mpcnet::protocol::RefreshSharesRequest;
+<span class="kw">use </span>mpcnet::protocol::RefreshShareRequest;
 <span class="kw">use </span>gf256::gf256;
  
-<span class="kw">let </span>request = RefreshSharesRequest {
+<span class="kw">let </span>request = RefreshShareRequest {
     key: <span class="string">&quot;share_key&quot;</span>.to_string(),
     refresh_key: <span class="macro">vec!</span>[Polynomial::new(<span class="number">2</span>, gf256::new(<span class="number">5</span>))],
     peer: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
