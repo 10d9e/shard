@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// * `GetShare(GetShareRequest)` - Represents a request to get a share.
 /// * `RegisterShare(RegisterShareRequest)` - Represents a request to register a new share.
-/// * `RefreshShares(RefreshSharesRequest)` - Represents a request to refresh existing shares.
+/// * `RefreshShares(RefreshShareRequest)` - Represents a request to refresh existing shares.
 ///
 /// # Examples
 ///
@@ -197,14 +197,14 @@ pub struct RegisterShareResponse {
 ///
 /// # Examples
 ///
-/// Creating a new `RefreshSharesRequest`:
+/// Creating a new `RefreshShareRequest`:
 ///
 /// ```rust
 /// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::RefreshSharesRequest;
+/// use mpcnet::protocol::RefreshShareRequest;
 /// use gf256::gf256;
 /// 
-/// let request = RefreshSharesRequest {
+/// let request = RefreshShareRequest {
 ///     key: "share_key".to_string(),
 ///     refresh_key: vec![Polynomial::new(2, gf256::new(5))],
 ///     peer: vec![1, 2, 3],
