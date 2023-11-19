@@ -16,7 +16,30 @@ To use MPCNet, follow these steps:
 4. **Combining Shares**: Reconstruct the secret using the `combine` command with the required number of shares.
 5. **Refreshing Shares**: Regularly refresh shares using the `refresh` command to maintain security.
 
-### Example 5 node network
+## Usage
+
+Install rust, `cargo build --release`, ask for `--help`. (more details on creating a localnet and docker-based testnet below)
+
+```bash
+❯ mpcnet --help
+Usage: mpcnet [OPTIONS] <COMMAND>
+
+Commands:
+  provide  Run as a share provider
+  combine  Combine shares to rebuild the secret
+  split    Split a secret into shares and register them with the network
+  ls       Get the list of providers for a share
+  refresh  Refresh the shares
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -s, --secret-key-seed <SECRET_KEY_SEED>  Fixed value to generate deterministic peer ID
+  -p, --peer <PEER>                        Address of a peer to connect to
+  -l, --listen-address <LISTEN_ADDRESS>    Address to listen on
+  -h, --help                               Print help
+```
+
+### Example 5-node local network
 Make sure you have the latest version of Rust installed. To build the node, open your terminal and navigate to the project directory where 'mpcnet' is located, and then run the following command:
 
 **1. Build the Node**
@@ -147,7 +170,7 @@ Each node logs output as it interacts with the network:
 💡 Sent share for key: "test".
 ```
 
-#### Docker
+#### Example 10-node Docker network
 
 A docker-based testnet is provided that includes 10 nodes and a client container for testing commands.
 
