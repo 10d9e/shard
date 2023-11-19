@@ -232,9 +232,9 @@ pub struct RefreshShareRequest {
 /// Creating a new `RefreshSharesResponse`:
 ///
 /// ```rust
-/// use mpcnet::protocol::RefreshSharesResponse;
+/// use mpcnet::protocol::RefreshShareResponse;
 /// 
-/// let response = RefreshSharesResponse {
+/// let response = RefreshShareResponse {
 ///     success: true,
 /// };
 /// ```
