@@ -147,52 +147,6 @@ Each node logs output as it interacts with the network:
 💡 Sent share for key: "test".
 ```
 
-These instructions provide a step-by-step guide for interacting with 'mpcnet' and its various functionalities. Make sure to adjust the IP addresses, ports, and keys as needed for your specific use case.
-
-## MPCNet command-line options
-
-MPCNet provides various functionalities as part of its command-line interface:
-
-### 1. `provide`
-
-Run MPCNet as a share provider. This mode enables the node to store and manage secret shares.
-
-```bash
-mpcnet provide [OPTIONS]
-```
-
-### 2. `combine`
-
-Combine shares to reconstruct the original secret. This command requires specifying the key associated with the shares and the threshold number.
-
-```bash
-mpcnet combine --key <KEY> --threshold <THRESHOLD>
-```
-
-### 3. `split`
-
-Split a secret into shares and register them with the network. This command allows specifying the threshold, total number of shares, and the secret to split.
-
-```bash
-mpcnet split --threshold <THRESHOLD> --shares <SHARES> --secret <SECRET>
-```
-
-### 4. `ls`
-
-List the providers for a specific share. This command helps in identifying all the nodes that hold a share of a particular secret.
-
-```bash
-mpcnet ls
-```
-
-### 5. `refresh`
-
-Refresh the shares to enhance their security. This command requires the key associated with the shares, the share threshold, and the key size.
-
-```bash
-mpcnet refresh --key <KEY> --threshold <THRESHOLD> --size <SIZE>
-```
-
 #### Docker
 
 A docker-based testnet is provided that includes 10 nodes and a client container for testing commands.
@@ -274,6 +228,52 @@ provider_6      | 💡 Sent share for key: "test".
 provider_5      | 💡 Sent share for key: "test".
 provider_9      | 💡 Sent share for key: "test".
 provider_8      | 💡 Sent share for key: "test".
+```
+
+These instructions provide a step-by-step guide for interacting with 'mpcnet' and its various functionalities. Make sure to adjust the IP addresses, ports, and keys as needed for your specific use case.
+
+## MPCNet command-line options
+
+MPCNet provides various functionalities as part of its command-line interface:
+
+### 1. `provide`
+
+Run MPCNet as a share provider. This mode enables the node to store and manage secret shares.
+
+```bash
+mpcnet provide [OPTIONS]
+```
+
+### 2. `combine`
+
+Combine shares to reconstruct the original secret. This command requires specifying the key associated with the shares and the threshold number.
+
+```bash
+mpcnet combine --key <KEY> --threshold <THRESHOLD>
+```
+
+### 3. `split`
+
+Split a secret into shares and register them with the network. This command allows specifying the threshold, total number of shares, and the secret to split.
+
+```bash
+mpcnet split --threshold <THRESHOLD> --shares <SHARES> --secret <SECRET>
+```
+
+### 4. `ls`
+
+List the providers for a specific share. This command helps in identifying all the nodes that hold a share of a particular secret.
+
+```bash
+mpcnet ls
+```
+
+### 5. `refresh`
+
+Refresh the shares to enhance their security. This command requires the key associated with the shares, the share threshold, and the key size.
+
+```bash
+mpcnet refresh --key <KEY> --threshold <THRESHOLD> --size <SIZE>
 ```
 
 ## Design
