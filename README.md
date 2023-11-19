@@ -140,6 +140,34 @@ Each node logs output as it interacts with the network:
 💡 Sent share for key: "test".
 ```
 
+## Design
+
+## libp2p
+
+Using libp2p for building the 'mpcnet' node offers several advantages due to the design and features of libp2p. Here's a detailed explanation of the benefits:
+
+1. **Modularity**: libp2p is designed with modularity in mind. It's composed of a set of pluggable modules which can be mixed and matched according to specific requirements. This means you can choose only the components you need for 'mpcnet', potentially reducing the complexity and increasing the efficiency of your network.
+
+2. **Interoperability**: One of the key strengths of libp2p is its language-agnostic nature, supporting multiple programming languages. This cross-language support facilitates interoperability, allowing 'mpcnet' nodes written in different languages to communicate seamlessly.
+
+3. **Decentralization and Scalability**: libp2p is built for decentralized systems, which aligns well with the architecture of 'mpcnet'. It handles peer discovery and routing in a decentralized manner, making it easier to scale the network and add more nodes without central coordination.
+
+4. **Transport Agnosticism**: The library is transport-agnostic, meaning it can work over various transport protocols like TCP, UDP, WebSockets, etc. This flexibility allows 'mpcnet' to operate in different network environments and conditions, enhancing its adaptability and resilience.
+
+5. **NAT Traversal**: libp2p offers robust NAT traversal capabilities, which is crucial for peer-to-peer networks like 'mpcnet' that may operate in environments with various network constraints.
+
+6. **Security**: libp2p has a strong focus on security. It supports encrypted communications and allows you to integrate various cryptographic protocols. This means that data transfer within the 'mpcnet' can be made secure, which is especially important when handling sensitive operations like secret sharing.
+
+7. **Stream Multiplexing**: The library supports multiplexing multiple data streams over a single connection. This feature can optimize network resources and improve the efficiency of data transmission in 'mpcnet'.
+
+8. **Peer Routing and Discovery**: libp2p simplifies the process of peer discovery and routing. In a network like 'mpcnet', where nodes need to find and connect with each other efficiently, these features of libp2p can significantly enhance performance and reliability.
+
+9. **Customization and Extensibility**: Due to its modular design, libp2p can be easily extended with custom protocols and features. This allows for the creation of tailored solutions that fit the specific requirements of 'mpcnet'.
+
+10. **Community and Support**: libp2p is backed by a strong community and is part of the broader IPFS ecosystem. This community provides support, contributes to the continuous improvement of the library, and ensures that it stays up-to-date with the latest technological advancements.
+
+The choice of libp2p for building 'mpcnet' provides a solid foundation for creating a secure, efficient, and scalable decentralized network, with the flexibility to adapt to various use cases and environments.
+
 ### Shamir's Secret Sharing (SSS)
 
 Shamir's Secret Sharing is a cryptographic technique developed by Adi Shamir. It enables a secret to be divided into multiple shares, distributed to participants, such that only a specified number of shares (threshold) can reconstruct the original secret. This approach ensures that the secret is secure even if some shares are compromised.
