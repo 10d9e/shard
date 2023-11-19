@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  bootstrapper:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: mpcnet --listen-address /ip4/0.0.0.0/tcp/40837 --secret-key-seed 1 provide --db_path .db
+    ports:
+      - "40837:40837"
+    networks:
+      mpcnet_network:
+        ipv4_address: 10.5.0.5
+
+  provider:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide --db_path .db
+    depends_on:
+      - bootstrapper
+    scale: 10
+    networks:
+      - mpcnet_network
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: tail -f /dev/null
+    networks:
+      - mpcnet_network
+
+networks:
+  mpcnet_network:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
