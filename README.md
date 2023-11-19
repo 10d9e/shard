@@ -1,4 +1,4 @@
-# MPCNet 🔑
+# mpcnet 🔑
 
 [![build-badge](https://github.com/jlogelin/mpcnet/actions/workflows/build.yml/badge.svg)](https://nightly.link/jlogelin/mpcnet/workflows/build/main/binaries.zip)
 [![document-badge](https://github.com/jlogelin/mpcnet/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/mpcnet)
