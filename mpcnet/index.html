@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Shamir Secret Sharing with Proactive Share Refresh"><title>mpcnet - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="mpcnet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../mpcnet/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a></nav><nav class="sidebar"><a class="logo-container" href="../mpcnet/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate mpcnet</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">mpcnet</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/mpcnet/lib.rs.html#1-123">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="shamir-secret-sharing-with-proactive-share-refresh"><a href="#shamir-secret-sharing-with-proactive-share-refresh">Shamir Secret Sharing with Proactive Share Refresh</a></h2>
+<p>This library implements a network that supoorts Shamir’s Secret Sharing (SSS) and Proactive Share Refreshing mechanisms.
+It provides functionality to split secrets into shares, distribute them among participants, and
+proactively refresh these shares over time to enhance security.</p>
+<h3 id="shamirs-secret-sharing-sss"><a href="#shamirs-secret-sharing-sss">Shamir’s Secret Sharing (SSS)</a></h3>
+<p>Shamir’s Secret Sharing is a cryptographic algorithm created by Adi Shamir. It is a form of secret
+sharing, where a secret is divided into parts, giving each participant its own unique part, with
+the property that a certain number of these parts are needed to reconstruct the secret.</p>
+<h4 id="the-mathematics-behind-sss"><a href="#the-mathematics-behind-sss">The Mathematics Behind SSS</a></h4>
+<p>The idea of SSS is based on polynomial interpolation in finite fields. Given a secret <code>S</code>, the
+algorithm chooses a random polynomial of degree <code>t-1</code> (where <code>t</code> is the threshold number of shares
+needed to reconstruct the secret):</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code>f(x) = a0 + a1<span class="kw-2">*</span>x + a2<span class="kw-2">*</span>x^<span class="number">2 </span>+ ... + a(t-<span class="number">1</span>)<span class="kw-2">*</span>x^(t-<span class="number">1</span>)</code></pre></div>
+<p>where <code>a0 = S</code> (the secret), and <code>a1, ..., a(t-1)</code> are randomly chosen coefficients. Each share
+corresponds to a point <code>(x, f(x))</code> on this polynomial. With at least <code>t</code> points, the polynomial
+and hence the secret can be reconstructed using Lagrange interpolation.</p>
+<h4 id="proactive-secret-sharing"><a href="#proactive-secret-sharing">Proactive Secret Sharing</a></h4>
+<p>Proactive Secret Sharing is an extension to SSS, enhancing its security. Over time, the shares of
+the secret are refreshed without changing the secret itself. This is achieved by generating a new
+polynomial with the same constant term (the secret) and different higher-degree coefficients,
+then updating the shares accordingly.</p>
+<h3 id="usage-in-the-code"><a href="#usage-in-the-code">Usage in the Code</a></h3>
+<p>The <code>sss</code> module in this library provides functionalities to perform Shamir’s Secret Sharing and
+proactive secret refreshing. It includes creating polynomials, generating shares, and refreshing
+them.</p>
+<h4 id="example-splitting-a-secret"><a href="#example-splitting-a-secret">Example: Splitting a Secret</a></h4>
+<p>To split a secret using Shamir’s Secret Sharing:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>mpcnet::sss::Polynomial;
+<span class="kw">use </span>gf256::gf256;
+ 
+<span class="kw">let </span>secret = gf256::new(<span class="number">123</span>); <span class="comment">// Your secret
+</span><span class="kw">let </span>degree = <span class="number">2</span>; <span class="comment">// Degree of the polynomial (threshold - 1)
+</span><span class="kw">let </span>poly = Polynomial::new(degree, secret); <span class="comment">// Create a polynomial with the secret as the constant term
+
+// Generate shares
+</span><span class="kw">let </span>shares: Vec&lt;(u8, gf256)&gt; = (<span class="number">1</span>..=<span class="number">5</span>).map(|i| (i, poly.evaluate(gf256::new(i)))).collect();
+<span class="comment">// Now `shares` holds 5 shares of the secret</span></code></pre></div>
+<h4 id="example-refreshing-shares"><a href="#example-refreshing-shares">Example: Refreshing Shares</a></h4>
+<p>To proactively refresh the shares:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>mpcnet::sss::Polynomial;
+<span class="kw">use </span>gf256::gf256;
+<span class="comment">// Assume `old_shares` is the existing shares
+</span><span class="kw">let </span>new_poly = Polynomial::new(<span class="number">0</span>, gf256::new(<span class="number">0</span>)); <span class="comment">// New polynomial with zero constant term
+
+// Refresh shares
+</span><span class="kw">let </span>refreshed_shares: Vec&lt;(u8, gf256)&gt; = old_shares
+    .iter()
+    .map(|<span class="kw-2">&amp;</span>(x, y)| {
+        <span class="kw">let </span>new_y = new_poly.evaluate(gf256::new(x));
+        (x, y + new_y) <span class="comment">// Add the new value to the old share
+    </span>})
+    .collect();
+<span class="comment">// Now `refreshed_shares` holds the refreshed shares</span></code></pre></div>
+<h3 id="modules"><a href="#modules">Modules</a></h3>
+<ul>
+<li><code>client</code>: Defines the network client functionality.</li>
+<li><code>command</code>: Contains commands used in network operations.</li>
+<li><code>event</code>: Defines various network events.</li>
+<li><code>network</code>: Implements network behaviors and utilities.</li>
+<li><code>protocol</code>: Defines the network communication protocol.</li>
+<li><code>repository</code>: Manages data storage and retrieval.</li>
+<li><code>sss</code>: Implements Shamir’s Secret Sharing and proactive secret refreshing.</li>
+</ul>
+<p>[More detailed documentation and examples are provided in each module.]</p>
+</div></details><h2 id="modules-1" class="small-section-header"><a href="#modules-1">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="client/index.html" title="mod mpcnet::client">client</a></div><div class="desc docblock-short">The <code>client</code> module defines the network client functionalities, enabling interactions with the 
+network, such as sending and receiving messages, handling requests, and other peer-to-peer 
+communication features.</div></li><li><div class="item-name"><a class="mod" href="command/index.html" title="mod mpcnet::command">command</a></div><div class="desc docblock-short">The <code>command</code> module contains definitions of various commands used in network operations. These 
+commands represent different actions that can be performed in the network, such as dialing other 
+peers, starting to listen for connections, and managing secret shares.</div></li><li><div class="item-name"><a class="mod" href="event/index.html" title="mod mpcnet::event">event</a></div><div class="desc docblock-short">The <code>event</code> module defines the different types of events that can occur in the network, such as 
+inbound requests or updates in the network state. This module helps in handling asynchronous 
+network events in a structured manner.</div></li><li><div class="item-name"><a class="mod" href="network/index.html" title="mod mpcnet::network">network</a></div><div class="desc docblock-short">The <code>network</code> module implements the necessary network behaviors and utilities. It encapsulates 
+the logic for network interactions, including setting up the network, handling peer discovery, 
+and managing communication protocols.</div></li><li><div class="item-name"><a class="mod" href="protocol/index.html" title="mod mpcnet::protocol">protocol</a></div><div class="desc docblock-short">The <code>protocol</code> module defines the communication protocols used in the network. It includes the 
+specifications for various request and response formats, ensuring standardized communication 
+across different network nodes.</div></li><li><div class="item-name"><a class="mod" href="repository/index.html" title="mod mpcnet::repository">repository</a></div><div class="desc docblock-short">The <code>repository</code> module manages data storage and retrieval. It is responsible for persisting 
+important data, like secret shares, and provides interfaces for accessing and updating this data.</div></li><li><div class="item-name"><a class="mod" href="sss/index.html" title="mod mpcnet::sss">sss</a></div><div class="desc docblock-short">The <code>sss</code> (Shamir’s Secret Sharing) module is a crucial component of the library. It implements 
+the Shamir’s Secret Sharing algorithm and proactive secret sharing. This module provides 
+functionalities to split secrets into shares, distribute them, and proactively refresh these 
+shares to enhance security.</div></li></ul></section></div></main></body></html>

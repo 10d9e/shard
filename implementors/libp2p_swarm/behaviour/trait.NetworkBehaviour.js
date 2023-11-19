@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"mpcnet":[["impl NetworkBehaviour for <a class=\"struct\" href=\"mpcnet/network/struct.Behaviour.html\" title=\"struct mpcnet::network::Behaviour\">Behaviour</a><span class=\"where fmt-newline\">where\n    Behaviour&lt;<a class=\"enum\" href=\"mpcnet/protocol/enum.Request.html\" title=\"enum mpcnet::protocol::Request\">Request</a>, <a class=\"enum\" href=\"mpcnet/protocol/enum.Response.html\" title=\"enum mpcnet::protocol::Response\">Response</a>&gt;: NetworkBehaviour,\n    Behaviour&lt;MemoryStore&gt;: NetworkBehaviour,\n    Behaviour: NetworkBehaviour,\n    Behaviour: NetworkBehaviour,</span>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

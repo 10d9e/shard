@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["combine_shares","generate_refresh_key","refresh_share","refresh_shares","split_secret"],"struct":["Polynomial"]};
