@@ -205,12 +205,36 @@ docker-compose up --build
 
 ### 2. Execute the commands within the testnet
 
+#### From the host operating system
+
 ```bash
 docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 7 --shares 10 --secret butterbeer --key test
 docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
 docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 7 --size 10
 docker exec -it client mpcnet --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test --threshold 7
 
+```
+
+#### Interactively within the `client` container
+
+```bash
+❯ docker exec -it client /bin/bash 
+root@71b4dce52922:/app# mpcnet --help
+Usage: mpcnet [OPTIONS] <COMMAND>
+
+Commands:
+  provide  Run as a share provider
+  combine  Combine shares to rebuild the secret
+  split    Split a secret into shares and register them with the network
+  ls       Get the list of providers for a share
+  refresh  Refresh the shares
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -s, --secret-key-seed <SECRET_KEY_SEED>  Fixed value to generate deterministic peer ID
+  -p, --peer <PEER>                        Address of a peer to connect to
+  -l, --listen-address <LISTEN_ADDRESS>    Address to listen on
+  -h, --help                               Print help
 ```
 
 Observe the node participants log statements with each command:
