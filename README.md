@@ -4,7 +4,7 @@
 [![document-badge](https://github.com/jlogelin/shard/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/shard)
 [![license-badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
-shard is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes non-interactively refresh these shares to harden the overall security of the network.
+SHARD is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes non-interactively refresh these shares to harden the overall security of the network.
 
 ## Getting Started
 
