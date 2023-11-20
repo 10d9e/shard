@@ -4,9 +4,9 @@ use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
-use mpcnet::repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao};
+use mpcnet::repository::{HashMapShareEntryDao, ShareEntryDaoTrait, SledShareEntryDao};
 use mpcnet::util::{
-    check_share_owner, execute_get_share, execute_refresh_share, execute_register_share,
+    execute_get_share, execute_refresh_share, execute_register_share,
     refresh_loop,
 };
 use rand::seq::IteratorRandom;
