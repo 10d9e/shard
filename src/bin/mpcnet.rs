@@ -31,7 +31,7 @@ use mpcnet::sss::split_secret;
 #[command(version = crate_version!())]
 #[command(
     about = "mpcnet threshold network node",
-    long_about = "mpcnet threshold network is a decentralized network node that allows users to split secrets into shares, distribute them across the network, and recombine them at a threshold to rebuild the secret."
+    long_about = "mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret."
 )]
 enum CliArgument {
     /// Run as a share provider.
