@@ -61,13 +61,13 @@ pub async fn execute_refresh_share(
         }
     }
 
-    println!("-- share before refresh: {:?}", share_entry.share);
+    debug!("-- share before refresh: {:?}", share_entry.share);
     let _ = refresh_share(
         (&mut share_entry.share.0, &mut share_entry.share.1),
         refresh_key,
     );
     dao.lock().unwrap().insert(key, &share_entry)?;
-    println!("-- share after refresh:  {:?}", share_entry.share);
+    debug!("-- share after refresh:  {:?}", share_entry.share);
 
     let test = dao
         .lock()
@@ -75,7 +75,7 @@ pub async fn execute_refresh_share(
         .get(&key)
         .unwrap()
         .ok_or("Share not found")?;
-    println!("-- test share from dao: {:?}", test.share);
+    debug!("-- test share from dao: {:?}", test.share);
 
     if channel.is_some() {
         network_client
@@ -251,8 +251,7 @@ pub async fn refresh_loop(
 ) {
     loop {
         interval.tick().await;
-        // Your task here
-        println!("Starting refresh.");
+        debug!("Starting refresh.");
 
         // get all the shares
         let shares = dao_clone.lock().unwrap().get_all().unwrap();
