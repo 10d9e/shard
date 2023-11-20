@@ -90,10 +90,12 @@ pub async fn execute_register_share(
     key: &str,
     sender: &PeerId,
     share: (u8, Vec<u8>),
+    threshold: u64,
     channel: ResponseChannel<Response>,
     dao: &Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
     network_client: &mut Client,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    // check if the share already exists and if so, check that the peer requesting the share is the owner
     if let Some(share_entry) = dao.lock().unwrap().get(key)? {
         debug!("Retrieved Entry: {:?}", share_entry);
         debug!("-- Sender: {:#?}.", sender);
@@ -114,8 +116,9 @@ pub async fn execute_register_share(
     dao.lock().unwrap().insert(
         key,
         &ShareEntry {
-            share: share,
+            share,
             sender: sender.to_bytes(),
+            threshold,
         },
     )?;
     network_client.respond_register_share(true, channel).await;
@@ -215,6 +218,7 @@ pub async fn run_loop(
                         &req.key,
                         &sender,
                         req.share,
+                        req.threshold,
                         channel,
                         &dao,
                         network_client,
@@ -223,7 +227,8 @@ pub async fn run_loop(
                 }
                 Request::GetShare(req) => {
                     let sender = PeerId::from_bytes(&req.sender).unwrap();
-                    let _ = execute_get_share(&req.key, &sender, channel, &dao, network_client).await;
+                    let _ =
+                        execute_get_share(&req.key, &sender, channel, &dao, network_client).await;
                 }
                 Request::RefreshShare(req) => {
                     let sender = PeerId::from_bytes(&req.sender).unwrap();
@@ -264,9 +269,11 @@ pub async fn refresh_loop(
             let sender = PeerId::from_bytes(&share_entry.sender).unwrap();
             debug!("sender: {:?}", sender);
 
+            // determine the threshold from the share
             let secret_len = share_entry.share.1.len();
             // generate a new refresh key
-            let refresh_key = generate_refresh_key(2, secret_len).unwrap();
+            let refresh_key =
+                generate_refresh_key(share_entry.threshold as usize, secret_len).unwrap();
             debug!("🔑 Refresh Key: {:#?}", refresh_key);
 
             // get the providers for the share

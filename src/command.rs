@@ -79,6 +79,7 @@ pub enum Command {
         key: String,
         peer: PeerId,
         sender: PeerId,
+        threshold: u64,
         sender_chan: oneshot::Sender<Result<bool, Box<dyn Error + Send>>>,
     },
     RespondRegisterShare {
@@ -222,6 +223,7 @@ pub async fn command_handler(eventloop: &mut EventLoop, command: Command) {
             share,
             key,
             peer,
+            threshold,
             sender,
             sender_chan,
         } => {
@@ -235,6 +237,7 @@ pub async fn command_handler(eventloop: &mut EventLoop, command: Command) {
                     Request::RegisterShare(RegisterShareRequest {
                         share,
                         key,
+                        threshold,
                         peer: peer.into(),
                         sender: sender.into(),
                     }),

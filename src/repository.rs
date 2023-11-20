@@ -29,6 +29,7 @@ use std::sync::Mutex;
 pub struct ShareEntry {
     pub share: (u8, Vec<u8>),
     pub sender: Vec<u8>,
+    pub threshold: u64,
 }
 
 /// Defines the Data Access Object (DAO) trait for `ShareEntry`.

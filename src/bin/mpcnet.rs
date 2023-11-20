@@ -15,12 +15,12 @@ use tracing::error;
 use tracing_subscriber::EnvFilter;
 
 use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
+use mpcnet::event::Event;
 use mpcnet::network;
+use mpcnet::protocol::Request;
 use mpcnet::provider::{
     dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
 };
-use mpcnet::event::Event;
-use mpcnet::protocol::Request;
 use mpcnet::sss::combine_shares;
 use mpcnet::sss::generate_refresh_key;
 use mpcnet::sss::split_secret;
@@ -204,6 +204,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                                 &req.key,
                                 &sender,
                                 req.share,
+                                req.threshold,
                                 channel,
                                 &dao,
                                 &mut network_client,
@@ -366,6 +367,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             .request_register_share(
                                 (share_id, share.unwrap().to_vec()),
                                 k.to_string(),
+                                threshold as u64,
                                 p,
                                 sender,
                             )

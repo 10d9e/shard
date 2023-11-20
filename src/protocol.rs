@@ -156,6 +156,7 @@ pub struct RegisterShareRequest {
     pub share: (u8, Vec<u8>),
     pub peer: Vec<u8>,
     pub sender: Vec<u8>,
+    pub threshold: u64,
 }
 
 /// Represents a response to a `RegisterShare` request.
@@ -294,6 +295,7 @@ mod tests {
             key: "unique_id".to_string(),
             peer: PeerId::random().into(),
             sender: PeerId::random().into(),
+            threshold: 2,
         };
         assert_test!(request);
     }
@@ -318,6 +320,7 @@ mod tests {
             key: "unique_id".to_string(),
             peer: PeerId::random().into(),
             sender: PeerId::random().into(),
+            threshold: 2,
         });
         assert_test!(register_share_req);
     }

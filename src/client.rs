@@ -244,6 +244,7 @@ impl Client {
         &mut self,
         share: (u8, Vec<u8>),
         key: String,
+        threshold: u64,
         peer: PeerId,
         sender: PeerId,
     ) -> Result<bool, Box<dyn Error + Send>> {
@@ -253,6 +254,7 @@ impl Client {
                 share,
                 key,
                 peer,
+                threshold,
                 sender,
                 sender_chan,
             })
