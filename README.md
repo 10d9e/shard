@@ -1,4 +1,4 @@
-# SHARD - SHARD Holds And Refreshes Data 🔑
+# SHARD - SHARD Holds And Refreshes (Discrete) Data 🔑
 
 [![build-badge](https://github.com/jlogelin/shard/actions/workflows/build.yml/badge.svg)](https://nightly.link/jlogelin/shard/workflows/build/main/binaries.zip)
 [![document-badge](https://github.com/jlogelin/shard/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/shard)
@@ -219,10 +219,24 @@ docker-compose up --build
 #### From the host operating system
 
 ```bash
-docker exec -it client shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 7 --shares 10 --secret butterbeer --key test
-docker exec -it client shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
-docker exec -it client shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 7 --size 10
-docker exec -it client shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test
+docker exec -it client shard split --threshold 7 --shares 10 --secret butterbeer --key test --verbose
+docker exec -it client shard ls --key test
+docker exec -it client shard refresh --key test --threshold 7 --size 10
+docker exec -it client shard combine --key test --verbose
+```
+
+or from within the client container:
+
+```bash
+docker exec -it client /bin/bash
+root@1facf6c6df16:/app# shard split --threshold 7 --shares 10 --secret butterbeer --key test --verbose
+✂️  Secret has been split and distributed across network...
+root@1facf6c6df16:/app# shard ls --key test
+✂️  Share Providers: { ...
+root@1facf6c6df16:/app# shard refresh --key test --threshold 7 --size 10
+🔄 Refreshed 10 shares for key: "test"
+root@1facf6c6df16:/app# shard combine --key test
+🔑 secret: "butterbeer"
 ```
 
 #### Interactively within the `client` container
