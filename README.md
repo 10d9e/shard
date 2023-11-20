@@ -442,3 +442,27 @@ Proactive secret sharing involves periodically updating the shares without chang
 
 2. **Refreshing Shares**:
    After some time, to refresh these shares, you generate a new polynomial with `123` as the constant term again but with new random coefficients for the other terms. The shares are updated by adding values from this new polynomial, thus refreshing them without altering the original secret.
+
+## Attack Vectors
+
+Shamir's Secret Sharing (SSS) is a cryptographic method for dividing a secret amongst a group of participants. Each participant holds a share of the secret, and only a specific subset of these shares can reconstruct the original secret. While SSS provides a robust way to distribute a secret, it is not immune to potential attack vectors. Here are some of the key attack vectors associated with Shamir's Secret Sharing:
+
+1. **Share Compromise**: If individual shares are compromised, through either physical theft, interception during transmission, or endpoint security breaches, the secret can potentially be reconstructed by unauthorized parties.
+
+2. **Insider Threats**: Participants in the scheme could act maliciously or be compromised. A participant might reveal their share willingly, or be coerced or tricked into doing so.
+
+3. **Collusion**: A significant threat in SSS is the risk of collusion among a subset of participants. If enough participants collude (where "enough" is determined by the threshold set in the SSS scheme), they can reconstruct the secret without involving the other participants.
+
+4. **Faulty or Malicious Implementation**: Bugs, backdoors, or other vulnerabilities in the implementation of the SSS algorithm can lead to exposure of the secret.
+
+5. **Social Engineering**: Attackers might use social engineering tactics to acquire shares from participants or to manipulate participants into unknowingly compromising the secret.
+
+6. **Brute Force Attacks**: Although generally impractical due to the cryptographic strength of SSS, if the threshold number of shares is low and the secret is not of significant complexity, brute force methods could potentially be used to reconstruct the secret.
+
+7. **Endpoint Security Weaknesses**: The security of the secret is also dependent on the security of the devices or systems where the shares are stored. Vulnerabilities in these systems could be exploited.
+
+8. **Data Corruption**: In the event of improper handling or technical faults, shares might become corrupted, making it impossible to reconstruct the secret.
+
+9. **Quantum Computing Threats**: While SSS itself might not be directly vulnerable to quantum computing attacks, the systems and cryptographic methods used in conjunction with SSS might be.
+
+In practical applications of SSS, it is crucial to consider and mitigate these potential vulnerabilities to ensure the security and integrity of the shared secret.
