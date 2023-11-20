@@ -1,11 +1,14 @@
-use clap::{Parser, crate_version};
+use clap::{crate_version, Parser};
 
 use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
 use mpcnet::repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao};
-use mpcnet::util::{check_share_owner, execute_refresh_share, refresh_loop, execute_register_share, execute_get_share};
+use mpcnet::util::{
+    check_share_owner, execute_get_share, execute_refresh_share, execute_register_share,
+    refresh_loop,
+};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
@@ -17,18 +20,20 @@ use tracing::debug;
 use tracing::error;
 use tracing_subscriber::EnvFilter;
 
+use mpcnet::event::Event;
 use mpcnet::protocol::Request;
 use mpcnet::sss::combine_shares;
 use mpcnet::sss::generate_refresh_key;
 use mpcnet::sss::split_secret;
-use mpcnet::event::Event;
-
 
 #[derive(Debug, Parser)]
 #[command(name = "MyApp")]
 #[command(author = "Lodge <jay.logelin@gmail.com>")]
 #[command(version = crate_version!())]
-#[command(about = "mpcnet threshold network node", long_about = "mpcnet threshold network is a decentralized network node that allows users to split secrets into shares, distribute them across the network, and recombine them at a threshold to rebuild the secret.")]
+#[command(
+    about = "mpcnet threshold network node",
+    long_about = "mpcnet threshold network is a decentralized network node that allows users to split secrets into shares, distribute them across the network, and recombine them at a threshold to rebuild the secret."
+)]
 enum CliArgument {
     /// Run as a share provider.
     Provide {
@@ -191,36 +196,55 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let mut network_client_clone = network_client.clone();
             spawn(async move {
                 let mut interval = time::interval(Duration::from_secs(refresh));
-                refresh_loop(&mut interval, dao_clone, &mut network_client_clone, local_peer_id).await;
+                refresh_loop(
+                    &mut interval,
+                    dao_clone,
+                    &mut network_client_clone,
+                    local_peer_id,
+                )
+                .await;
             });
 
             loop {
                 match network_events.next().await {
                     // Reply with the content of the file on incoming requests.
-                    Some(Event::InboundRequest { request, channel }) => {
-                        match request {
-                            Request::RegisterShare(req) => {
-                                let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                execute_register_share(&req.key, &sender, req.share, channel, &dao, &mut network_client).await?;
-                            }
-                            Request::GetShare(req) => {
-                                let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                execute_get_share(&req.key, &sender, channel, &dao, &mut network_client).await?;
-                            }
-                            Request::RefreshShare(req) => {
-                                let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                execute_refresh_share(
-                                    &req.key,
-                                    &sender,
-                                    &req.refresh_key,
-                                    Some(channel),
-                                    &dao,
-                                    &mut network_client,
-                                )
-                                .await?;
-                            }
+                    Some(Event::InboundRequest { request, channel }) => match request {
+                        Request::RegisterShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_register_share(
+                                &req.key,
+                                &sender,
+                                req.share,
+                                channel,
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
                         }
-                    }
+                        Request::GetShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_get_share(
+                                &req.key,
+                                &sender,
+                                channel,
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
+                        }
+                        Request::RefreshShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_refresh_share(
+                                &req.key,
+                                &sender,
+                                &req.refresh_key,
+                                Some(channel),
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
+                        }
+                    },
                     e => debug!("unhandled client event: {e:?}"),
                 }
             }
