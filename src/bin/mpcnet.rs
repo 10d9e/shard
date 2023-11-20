@@ -48,9 +48,9 @@ enum CliArgument {
         #[clap(long, short)]
         key: String,
 
-        /// Share threshold.
+        /// Share threshold, if none is provided, uses the number of shares
         #[clap(long, short)]
-        threshold: usize,
+        threshold: Option<usize>,
 
         /// Debug mode displays the shares
         #[clap(long, short)]
@@ -366,6 +366,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
 
             debug!("Found {} providers for share {}.", providers.len(), key);
+            // get the threshold number of shares, if threshold is None, use the number of providers
+            let threshold = threshold.unwrap_or_else(|| providers.len());
 
             // Request a share from each node.
             let requests = providers.into_iter().map(|p| {
@@ -456,11 +458,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             debug!("*** Found {} providers.", providers.len());
 
+            // select shares number of providers
+            let rng = &mut rand::thread_rng();
+            let providers_sample = providers.into_iter().choose_multiple(rng, shares);
+
             // make sure to only send shares to only shares number of providers
-            let requests = providers
+            let requests = providers_sample
                 .clone()
                 .into_iter()
-                .take(shares)
                 .enumerate()
                 .map(|(i, p)| {
                     let mut network_client = network_client.clone();
@@ -504,7 +509,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             println!("✂️  Secret has been split and distributed across network.");
             println!("    key: {:#?}", key);
             println!("    threshold: {:#?}", threshold);
-            println!("    providers: {:#?}", providers)
+            println!("    providers: {:#?}", providers_sample)
         }
         CliArgument::Ls { key } => {
             let providers = network_client.get_providers(key.clone()).await;
