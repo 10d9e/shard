@@ -185,7 +185,7 @@ pub async fn run_loop(
     mut network_events: impl Stream<Item = Event> + Unpin,
 ) {
     // check if the db_path is set, if so use sled, otherwise use HashMap
-    let dao = dao(db_path).unwrap();
+    let dao: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>> = dao(db_path).unwrap();
 
     // check if refresh is set, if not use a default of 30 minutes
     let refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
