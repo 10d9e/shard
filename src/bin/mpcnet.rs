@@ -3,11 +3,6 @@ use clap::{crate_version, Parser};
 use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
-use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
-use mpcnet::network;
-use mpcnet::provider::{
-    dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
-};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
@@ -19,6 +14,11 @@ use tracing::debug;
 use tracing::error;
 use tracing_subscriber::EnvFilter;
 
+use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
+use mpcnet::network;
+use mpcnet::provider::{
+    dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
+};
 use mpcnet::event::Event;
 use mpcnet::protocol::Request;
 use mpcnet::sss::combine_shares;
