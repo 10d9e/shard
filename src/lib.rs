@@ -42,7 +42,7 @@
 //! To split a secret using Shamir's Secret Sharing:
 //!
 //! ```rust
-//! use mpcnet::sss::Polynomial;
+//! use shard::sss::Polynomial;
 //! use gf256::gf256;
 //!
 //! let secret = gf256::new(123); // Your secret
@@ -59,7 +59,7 @@
 //! To proactively refresh the shares:
 //!
 //! ```ignore
-//! use mpcnet::sss::Polynomial;
+//! use shard::sss::Polynomial;
 //! use gf256::gf256;
 //! // Assume `old_shares` is the existing shares
 //! let new_poly = Polynomial::new(0, gf256::new(0)); // New polynomial with zero constant term

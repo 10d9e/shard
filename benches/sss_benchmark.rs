@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use mpcnet::sss::{combine_shares, generate_refresh_key, refresh_shares, split_secret};
+use shard::sss::{combine_shares, generate_refresh_key, refresh_shares, split_secret};
 
 fn bench_split_secret(c: &mut Criterion) {
     c.bench_function("split_secret", |b| {

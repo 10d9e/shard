@@ -128,7 +128,7 @@ impl<'de> Deserialize<'de> for Polynomial {
 ///
 /// # Examples
 /// ```rust
-/// use mpcnet::sss::split_secret;
+/// use shard::sss::split_secret;
 ///
 /// let secret = b"hello world";
 /// let threshold = 3;
@@ -173,7 +173,7 @@ pub fn split_secret(
 ///
 /// # Examples
 /// ```ignore
-/// use mpcnet::sss::{split_secret, combine_shares};
+/// use shard::sss::{split_secret, combine_shares};
 /// // Assuming `shares_map` is a HashMap<u8, Vec<u8>> obtained from `split_secret`
 /// let reconstructed_secret = combine_shares(&shares_map).unwrap();
 /// ```
@@ -522,5 +522,44 @@ mod tests {
         assert!(recovered.unwrap().as_slice() == secret);
 
         Ok(())
+    }
+
+    #[test]
+    fn test_should_fail_with_shares_below_threshold() -> Result<(), String> {
+        // test should fail if the shares to reassemble are less than the threshold
+        let secret = b"Remember what the dormouse said.";
+        let threshold = 12;
+        let total_shares = 30;
+
+        // Split into 30 shares
+        let mut shares_map = split_secret(secret, threshold, total_shares)?;
+        assert!(shares_map.len() == total_shares);
+
+        // Refresh the shares
+        refresh_shares(&mut shares_map, threshold)?;
+        refresh_shares(&mut shares_map, threshold)?;
+        refresh_shares(&mut shares_map, threshold)?;
+
+        // Select a random subset of shares to combine
+        let mut rng = rand::thread_rng();
+        let subset: HashMap<u8, Vec<u8>> = shares_map
+            .iter()
+            .choose_multiple(&mut rng, threshold-1)
+            .into_iter()
+            .map(|(&key, value)| (key, value.clone()))
+            .collect();
+
+        //assert!(subset.len() == threshold);
+
+        let recovered = combine_shares(&subset);
+        assert!(recovered.is_some());
+
+        println!("actual:    {}", hex::encode(&secret));
+        println!("recovered: {}", hex::encode(recovered.clone().unwrap()));
+
+        assert!(recovered.unwrap().as_slice() == secret);
+
+        Ok(())
+
     }
 }

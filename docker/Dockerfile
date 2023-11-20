@@ -10,7 +10,7 @@ RUN cargo build --release
 # Start a new stage and copy the server binary from the builder stage
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
-COPY --from=builder /app/target/release/mpcnet /usr/local/bin/
+COPY --from=builder /app/target/release/shard /usr/local/bin/
 
 # Command to run the application
-CMD ["mpcnet"]
+CMD ["shard"]

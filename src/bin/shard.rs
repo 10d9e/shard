@@ -14,27 +14,27 @@ use tracing::debug;
 use tracing::error;
 use tracing_subscriber::EnvFilter;
 
-use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
-use mpcnet::event::Event;
-use mpcnet::network;
-use mpcnet::protocol::Request;
-use mpcnet::provider::{
+use shard::constants::DEFAULT_REFRESH_SECONDS;
+use shard::event::Event;
+use shard::network;
+use shard::protocol::Request;
+use shard::provider::{
     dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
 };
-use mpcnet::sss::combine_shares;
-use mpcnet::sss::generate_refresh_key;
-use mpcnet::sss::split_secret;
+use shard::sss::combine_shares;
+use shard::sss::generate_refresh_key;
+use shard::sss::split_secret;
 
 #[derive(Debug, Parser)]
-#[command(name = "MyApp")]
+#[command(name = "shard")]
 #[command(author = "lodge <jay.logelin@gmail.com>")]
 #[command(version = crate_version!())]
 #[command(
-    about = "mpcnet threshold network node",
-    long_about = "mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the mpcnet, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default"
+    about = "SHARD - SHARD Holds And Refreshes Data",
+    long_about = "SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default"
 )]
 enum CliArgument {
-    /// Run a share provider node that provides shares to mpcnet users, and refresh them automatically at a specified interval, set using the --refresh-interval flag.
+    /// Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval, set using the --refresh-interval flag.
     Provide {
         /// use embedded database for persistence
         /// otherwise use memory database
@@ -56,9 +56,9 @@ enum CliArgument {
         #[clap(long, short)]
         threshold: Option<usize>,
 
-        /// Debug mode displays the shares
+        /// Verbose mode displays the shares
         #[clap(long, short)]
-        debug: bool,
+        verbose: bool,
     },
     /// Split a secret into shares and propagate them across the network.
     Split {
@@ -78,9 +78,9 @@ enum CliArgument {
         #[clap(long)]
         secret: String,
 
-        /// Debug mode displays the shares
+        /// Verbose mode displays the shares
         #[clap(long, short)]
-        debug: bool,
+        verbose: bool,
     },
 
     /// Get the list of share providers for a secret.
@@ -107,7 +107,7 @@ enum CliArgument {
 }
 
 #[derive(Parser, Debug)]
-#[clap(name = "MpcNet Threshold Network")]
+#[clap(name = "shard Threshold Network")]
 struct Opt {
     /// Fixed value to generate deterministic peer ID.
     #[clap(long, short)]
@@ -247,7 +247,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         CliArgument::Combine {
             key,
             threshold,
-            debug,
+            verbose,
         } => {
             // sleep for a bit to give the network time to bootstrap
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -299,8 +299,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             debug!("Received shares: {:?}", &shares);
 
             // if the debug flag is set, print the shares
-            if debug {
-                println!("🐛 [debug] shares: ");
+            if verbose {
+                println!("🐛 shares: ");
                 let mut items: Vec<_> = shares_map.iter().collect();
                 items.sort_by(|a, b| a.1.cmp(b.1));
 
@@ -309,10 +309,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     println!("  {}", hex::encode(value));
                 }
             }
+
             println!(
                 "🔑 secret: {:#?}",
-                String::from_utf8(secret.unwrap()).unwrap()
+                hex::encode(secret.unwrap())
             );
+
+         
         }
 
         // Splitting a secret.
@@ -321,7 +324,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             shares,
             secret,
             key,
-            debug,
+            verbose,
         } => {
             // sleep for a bit to give the network time to bootstrap
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -389,8 +392,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     }
                 });
 
-            if debug {
-                println!("🐛 [debug] shares: ");
+            if verbose {
+                println!("🐛 shares: ");
                 let mut items: Vec<_> = split_shares.iter().collect();
                 items.sort_by(|a, b| a.1.cmp(b.1));
 

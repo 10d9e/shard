@@ -18,7 +18,7 @@ use std::sync::Mutex;
 /// Creating a new `ShareEntry`:
 ///
 /// ```rust
-/// use mpcnet::repository::ShareEntry;
+/// use shard::repository::ShareEntry;
 ///
 /// let share_entry = ShareEntry {
 ///     share: (1, vec![2, 3, 4]),
@@ -114,7 +114,7 @@ impl SledShareEntryDao {
     /// Creating a new instance:
     ///
     /// ```ignore
-    /// use mpcnet::repository::SledShareEntryDao;
+    /// use shard::repository::SledShareEntryDao;
     ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// ```
@@ -141,9 +141,9 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// # Examples
     ///
     /// ```ignore
-    /// use mpcnet::repository::ShareEntry;
-    /// use mpcnet::repository::SledShareEntryDao;
-    /// use mpcnet::repository::ShareEntryDaoTrait;
+    /// use shard::repository::ShareEntry;
+    /// use shard::repository::SledShareEntryDao;
+    /// use shard::repository::ShareEntryDaoTrait;
     ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6] };
@@ -170,8 +170,8 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// # Examples
     ///
     /// ```ignore
-    /// use mpcnet::repository::ShareEntryDaoTrait;
-    /// use mpcnet::repository::SledShareEntryDao;
+    /// use shard::repository::ShareEntryDaoTrait;
+    /// use shard::repository::SledShareEntryDao;
     ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let entry = dao.get("some_key").unwrap();
@@ -211,9 +211,9 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// # Examples
     ///
     /// ```ignore
-    /// use mpcnet::repository::ShareEntry;
-    /// use mpcnet::repository::SledShareEntryDao;
-    /// use mpcnet::repository::ShareEntryDaoTrait;
+    /// use shard::repository::ShareEntry;
+    /// use shard::repository::SledShareEntryDao;
+    /// use shard::repository::ShareEntryDaoTrait;
     ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12] };
@@ -236,8 +236,8 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// # Examples
     ///
     /// ```ignore
-    /// use mpcnet::repository::ShareEntryDaoTrait;
-    /// use mpcnet::repository::SledShareEntryDao;
+    /// use shard::repository::ShareEntryDaoTrait;
+    /// use shard::repository::SledShareEntryDao;
     ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// dao.delete("some_key");
@@ -269,11 +269,11 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// # Examples
     ///
     /// ```rust
-    /// use mpcnet::repository::ShareEntry;
+    /// use shard::repository::ShareEntry;
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
-    /// use mpcnet::repository::HashMapShareEntryDao;
-    /// use mpcnet::repository::ShareEntryDaoTrait;
+    /// use shard::repository::HashMapShareEntryDao;
+    /// use shard::repository::ShareEntryDaoTrait;
     ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
     /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6], threshold: 2 };
@@ -298,7 +298,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// # Examples
     ///
     /// ```rust
-    /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
+    /// use shard::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
     ///
@@ -337,7 +337,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// # Examples
     ///
     /// ```rust
-    /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
+    /// use shard::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
     ///
@@ -368,7 +368,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// # Examples
     ///
     /// ```rust
-    /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
+    /// use shard::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
     ///

@@ -126,14 +126,14 @@ pub async fn new(
             );
             let request_response = request_response::cbor::Behaviour::new(
                 [(
-                    StreamProtocol::new("/mpcnet/reqres/1.0.0"),
+                    StreamProtocol::new("/shard/reqres/1.0.0"),
                     ProtocolSupport::Full,
                 )],
                 request_response::Config::default(),
             );
 
             let identify = identify::Behaviour::new(identify::Config::new(
-                "/mpcnet/id/1.0.0".to_string(),
+                "/shard/id/1.0.0".to_string(),
                 key.public(),
             ));
 
@@ -152,7 +152,7 @@ pub async fn new(
         .set_mode(Some(kad::Mode::Server));
 
     // Create a Gossipsub topic
-    let topic = IdentTopic::new("/mpcnet/pubsub/1.0.0".to_string());
+    let topic = IdentTopic::new("/shard/pubsub/1.0.0".to_string());
     // subscribes to our topic
     swarm.behaviour_mut().gossipsub.subscribe(&topic)?;
 

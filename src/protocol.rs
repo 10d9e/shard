@@ -18,8 +18,8 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```rust
 /// use libp2p::PeerId;
-/// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::{GetShareRequest, Request};
+/// use shard::sss::Polynomial;
+/// use shard::protocol::{GetShareRequest, Request};
 ///
 /// let request = Request::GetShare(GetShareRequest {
 ///     key: "share_key".to_string(),
@@ -50,8 +50,8 @@ pub enum Request {
 ///
 /// ```rust
 /// use libp2p::PeerId;
-/// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::{GetShareResponse, Response};
+/// use shard::sss::Polynomial;
+/// use shard::protocol::{GetShareResponse, Response};
 ///
 /// let response = Response::GetShare(GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
@@ -81,8 +81,8 @@ pub enum Response {
 ///
 /// ```rust
 /// use libp2p::PeerId;
-/// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::GetShareRequest;
+/// use shard::sss::Polynomial;
+/// use shard::protocol::GetShareRequest;
 ///
 /// let request = GetShareRequest {
 ///     key: "share_key".to_string(),
@@ -111,7 +111,7 @@ pub struct GetShareRequest {
 /// Creating a new `GetShareResponse`:
 ///
 /// ```rust
-/// use mpcnet::protocol::GetShareResponse;
+/// use shard::protocol::GetShareResponse;
 ///
 /// let response = GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
@@ -140,8 +140,8 @@ pub struct GetShareResponse {
 /// Creating a new `RegisterShareRequest`:
 ///
 /// ```rust
-/// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::RegisterShareRequest;
+/// use shard::sss::Polynomial;
+/// use shard::protocol::RegisterShareRequest;
 ///
 /// let request = RegisterShareRequest {
 ///     key: "share_key".to_string(),
@@ -173,7 +173,7 @@ pub struct RegisterShareRequest {
 /// Creating a new `RegisterShareResponse`:
 ///
 /// ```rust
-/// use mpcnet::protocol::RegisterShareResponse;
+/// use shard::protocol::RegisterShareResponse;
 ///
 /// let response = RegisterShareResponse {
 ///     success: true,
@@ -201,8 +201,8 @@ pub struct RegisterShareResponse {
 /// Creating a new `RefreshShareRequest`:
 ///
 /// ```rust
-/// use mpcnet::sss::Polynomial;
-/// use mpcnet::protocol::RefreshShareRequest;
+/// use shard::sss::Polynomial;
+/// use shard::protocol::RefreshShareRequest;
 /// use gf256::gf256;
 ///
 /// let request = RefreshShareRequest {
@@ -233,7 +233,7 @@ pub struct RefreshShareRequest {
 /// Creating a new `RefreshSharesResponse`:
 ///
 /// ```rust
-/// use mpcnet::protocol::RefreshShareResponse;
+/// use shard::protocol::RefreshShareResponse;
 ///
 /// let response = RefreshShareResponse {
 ///     success: true,

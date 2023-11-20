@@ -24,8 +24,8 @@ use crate::sss::Polynomial;
 ///
 /// ```rust
 /// use futures::channel::mpsc;
-/// use mpcnet::client::Client;
-/// use mpcnet::command::Command;
+/// use shard::client::Client;
+/// use shard::command::Command;
 ///
 /// let (sender, receiver) = mpsc::channel::<Command>(10);
 /// let client = Client { sender };
