@@ -31,11 +31,11 @@ use shard::sss::split_secret;
 #[command(author = "lodge <jay.logelin@gmail.com>")]
 #[command(version = crate_version!())]
 #[command(
-    about = "SHARD - SHARD Holds And Refreshes (Discrete) Data",
-    long_about = "SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default. Default configuration is located at ~/.shard/conf.toml."
+    about = "SHARD (SHARD Holds And Refreshes (Discrete) Data))",
+    long_about = "SHARD (SHARD Holds And Refreshes (Discrete) Data) threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default. Default configuration is located at ~/.shard/conf.toml."
 )]
 enum CliArgument {
-    /// Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval, set using the --refresh-interval flag.
+    /// (Provider) Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval.
     Provide {
         /// use embedded database for persistence
         /// otherwise use memory database
@@ -47,7 +47,7 @@ enum CliArgument {
         #[clap(long, short)]
         refresh_interval: Option<u64>,
     },
-    /// Combine shares from the network to rebuild a secret.
+    /// (Client) Combine shares from the network to rebuild a secret.
     Combine {
         /// key of the share to get.
         #[clap(long, short)]
@@ -61,7 +61,7 @@ enum CliArgument {
         #[clap(long, short)]
         verbose: bool,
     },
-    /// Split a secret into shares and propagate them across the network.
+    /// (Client) Split a secret into shares and propagate them across the network.
     Split {
         /// Share threshold.
         #[clap(long, short)]
@@ -84,14 +84,14 @@ enum CliArgument {
         verbose: bool,
     },
 
-    /// Get the list of share providers for a secret.
+    /// (Client) Get the list of share providers for a secret.
     Ls {
         /// key of the secret.
         #[clap(long, short)]
         key: String,
     },
 
-    /// Refresh the shares
+    /// (Client) Refresh the shares
     Refresh {
         /// key of the secret.
         #[clap(long, short)]
