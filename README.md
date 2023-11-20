@@ -4,7 +4,7 @@
 [![document-badge](https://github.com/jlogelin/shard/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/shard)
 [![license-badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
-SHARD is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes non-interactively refresh these shares to harden the overall security of the network.
+SHARD is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes non-interactively refresh these shares to harden the overall security of the network. It has a robust p2p network [design](https://github.com/jlogelin/shard#design), checkout the testnet examples [here](https://github.com/jlogelin/shard#example-5-node-local-network) and [here](https://github.com/jlogelin/shard#example-10-node-docker-network).
 
 ## Getting Started
 
@@ -17,8 +17,6 @@ To use shard, follow these steps:
 5. **Refreshing Shares**: Regularly refresh shares using the `refresh` command to maintain security.
 
 ## Usage
-
-Install rust, `cargo build --release`, ask for `--help`. (more details on creating a [localnet](https://github.com/jlogelin/shard#example-5-node-local-network) and [docker-based testnet](https://github.com/jlogelin/shard#example-10-node-docker-network) below)
 
 All commands, except for `provide` are for clients to interface with the network.
 
