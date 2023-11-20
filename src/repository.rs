@@ -23,6 +23,7 @@ use std::sync::Mutex;
 /// let share_entry = ShareEntry {
 ///     share: (1, vec![2, 3, 4]),
 ///     sender: vec![5, 6, 7],
+///     threshold: 2,
 /// };
 /// ```
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -275,7 +276,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use mpcnet::repository::ShareEntryDaoTrait;
     ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
-    /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6] };
+    /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6], threshold: 2 };
     /// dao.insert("some_key", &entry).unwrap();
     /// ```
     fn insert(&self, key: &str, entry: &ShareEntry) -> Result<(), Box<dyn Error>> {
@@ -341,7 +342,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use std::sync::Mutex;
     ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
-    /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12] };
+    /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12], threshold: 2 };
     /// dao.update("some_key", &new_entry);
     /// ```
     fn update(&self, key: &str, entry: &ShareEntry) -> Result<(), Box<dyn Error>> {

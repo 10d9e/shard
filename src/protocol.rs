@@ -148,6 +148,7 @@ pub struct GetShareResponse {
 ///     share: (1, vec![1, 2, 3]),
 ///     peer: vec![4, 5, 6],
 ///     sender: vec![7, 8, 9],
+///     threshold: 2,
 /// };
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

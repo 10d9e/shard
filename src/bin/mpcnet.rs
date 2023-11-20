@@ -31,10 +31,10 @@ use mpcnet::sss::split_secret;
 #[command(version = crate_version!())]
 #[command(
     about = "mpcnet threshold network node",
-    long_about = "mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret."
+    long_about = "mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the mpcnet, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default"
 )]
 enum CliArgument {
-    /// Run as a share provider.
+    /// Run a share provider node that provides shares to mpcnet users, and refresh them automatically at a specified interval, set using the --refresh-interval flag.
     Provide {
         /// use embedded database for persistence
         /// otherwise use memory database
@@ -44,9 +44,9 @@ enum CliArgument {
         /// Share refresh interval in seconds
         // #[clap(long, short, default_value_t = 60)]
         #[clap(long, short)]
-        refresh: Option<u64>,
+        refresh_interval: Option<u64>,
     },
-    /// Combine shares to rebuild a secret.
+    /// Combine shares from the network to rebuild a secret.
     Combine {
         /// key of the share to get.
         #[clap(long, short)]
@@ -60,7 +60,7 @@ enum CliArgument {
         #[clap(long, short)]
         debug: bool,
     },
-    /// Split a secret into shares and register them with the network.
+    /// Split a secret into shares and propagate them across the network.
     Split {
         /// Share threshold.
         #[clap(long, short)]
@@ -172,12 +172,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     match opt.argument {
         // Providing a share.
-        CliArgument::Provide { db_path, refresh } => {
+        CliArgument::Provide {
+            db_path,
+            refresh_interval,
+        } => {
             // check if the db_path is set, if so use sled, otherwise use HashMap
             let dao = dao(db_path).unwrap();
 
             // check if refresh is set, if not use a default of 30 minutes
-            let refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
+            let refresh = refresh_interval.unwrap_or(DEFAULT_REFRESH_SECONDS);
             debug!("Using refresh_seconds: {}", refresh);
 
             // spawn a refresh task to run every refresh_seconds seconds

@@ -127,4 +127,5 @@ pub mod sss;
 /// the secret shares and the peer list.
 pub mod provider;
 
+/// The `constants` module defines various constants used in the library.
 pub mod constants;
