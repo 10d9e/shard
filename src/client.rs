@@ -26,7 +26,7 @@ use crate::sss::Polynomial;
 /// use futures::channel::mpsc;
 /// use mpcnet::client::Client;
 /// use mpcnet::command::Command;
-/// 
+///
 /// let (sender, receiver) = mpsc::channel::<Command>(10);
 /// let client = Client { sender };
 /// ```
@@ -36,7 +36,6 @@ pub struct Client {
 }
 
 impl Client {
-    
     /// Listen for incoming connections on the given address.
     ///
     /// # Arguments

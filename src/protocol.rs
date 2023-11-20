@@ -1,7 +1,6 @@
 use crate::sss::Polynomial;
 use serde::{Deserialize, Serialize};
 
-
 /// Represents a request in a simple share exchange protocol.
 ///
 /// This enum encapsulates different types of requests that can be made, such as getting a share,
@@ -21,7 +20,7 @@ use serde::{Deserialize, Serialize};
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::{GetShareRequest, Request};
-/// 
+///
 /// let request = Request::GetShare(GetShareRequest {
 ///     key: "share_key".to_string(),
 ///     peer: vec![1, 2, 3],
@@ -53,7 +52,7 @@ pub enum Request {
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::{GetShareResponse, Response};
-/// 
+///
 /// let response = Response::GetShare(GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
 ///     success: true,
@@ -84,7 +83,7 @@ pub enum Response {
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::GetShareRequest;
-/// 
+///
 /// let request = GetShareRequest {
 ///     key: "share_key".to_string(),
 ///     peer: vec![1, 2, 3],
@@ -113,7 +112,7 @@ pub struct GetShareRequest {
 ///
 /// ```rust
 /// use mpcnet::protocol::GetShareResponse;
-/// 
+///
 /// let response = GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
 ///     success: true,
@@ -143,7 +142,7 @@ pub struct GetShareResponse {
 /// ```rust
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::RegisterShareRequest;
-/// 
+///
 /// let request = RegisterShareRequest {
 ///     key: "share_key".to_string(),
 ///     share: (1, vec![1, 2, 3]),
@@ -173,7 +172,7 @@ pub struct RegisterShareRequest {
 ///
 /// ```rust
 /// use mpcnet::protocol::RegisterShareResponse;
-/// 
+///
 /// let response = RegisterShareResponse {
 ///     success: true,
 /// };
@@ -185,7 +184,7 @@ pub struct RegisterShareResponse {
 
 /// Represents a request to refresh share.
 ///
-/// This struct is used when a client requests to refresh the existing shares, 
+/// This struct is used when a client requests to refresh the existing shares,
 /// typically to enhance their security.
 ///
 /// # Fields
@@ -203,7 +202,7 @@ pub struct RegisterShareResponse {
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::RefreshShareRequest;
 /// use gf256::gf256;
-/// 
+///
 /// let request = RefreshShareRequest {
 ///     key: "share_key".to_string(),
 ///     refresh_key: vec![Polynomial::new(2, gf256::new(5))],
@@ -233,7 +232,7 @@ pub struct RefreshShareRequest {
 ///
 /// ```rust
 /// use mpcnet::protocol::RefreshShareResponse;
-/// 
+///
 /// let response = RefreshShareResponse {
 ///     success: true,
 /// };

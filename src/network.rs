@@ -7,6 +7,7 @@ use futures::prelude::*;
 
 use libp2p::gossipsub::IdentTopic;
 use libp2p::request_response::ProtocolSupport;
+use libp2p::PeerId;
 use libp2p::{
     gossipsub, identify, identity, kad, noise, request_response, swarm::NetworkBehaviour, tcp,
     yamux, StreamProtocol,
@@ -77,7 +78,7 @@ pub struct Behaviour {
 /// ```
 pub async fn new(
     secret_key_seed: Option<u8>,
-) -> Result<(Client, impl Stream<Item = Event>, EventLoop), Box<dyn Error>> {
+) -> Result<(Client, impl Stream<Item = Event>, EventLoop, PeerId), Box<dyn Error>> {
     // Create a public/private key pair, either random or based on a seed.
     let id_keys = match secret_key_seed {
         Some(seed) => {
@@ -164,5 +165,6 @@ pub async fn new(
         },
         event_receiver,
         EventLoop::new(swarm, command_receiver, event_sender),
+        peer_id,
     ))
 }

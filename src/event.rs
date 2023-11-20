@@ -88,7 +88,6 @@ pub struct EventLoop {
 }
 
 impl EventLoop {
-
     /// Constructs a new `EventLoop`.
     ///
     /// # Arguments
