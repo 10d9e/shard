@@ -31,7 +31,7 @@ use shard::sss::split_secret;
 #[command(author = "lodge <jay.logelin@gmail.com>")]
 #[command(version = crate_version!())]
 #[command(
-    about = "SHARD - SHARD Holds And Refreshes Data",
+    about = "SHARD - SHARD Holds And Refreshes (Discrete) Data",
     long_about = "SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default. Default configuration is located at ~/.shard/conf.toml."
 )]
 enum CliArgument {
@@ -469,7 +469,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             futures::future::join_all(requests).await;
 
             debug!("Found {} providers for share {}.", providers.len(), key);
-            print!(
+            println!(
                 "🔄 Refreshed {} shares for key: {:?}",
                 providers.len(),
                 &key
