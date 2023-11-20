@@ -3,6 +3,7 @@ use clap::{crate_version, Parser};
 use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
+use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
 use mpcnet::network;
 use mpcnet::provider::{
     dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
@@ -177,7 +178,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let dao = dao(db_path).unwrap();
 
             // check if refresh is set, if not use a default of 30 minutes
-            let refresh = refresh.unwrap_or(30 * 60);
+            let refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
             debug!("Using refresh_seconds: {}", refresh);
 
             // spawn a refresh task to run every refresh_seconds seconds

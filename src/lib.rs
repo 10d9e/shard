@@ -126,3 +126,5 @@ pub mod sss;
 /// providers for the network. A provider is responsible for managing the network state, including
 /// the secret shares and the peer list.
 pub mod provider;
+
+pub mod constants;

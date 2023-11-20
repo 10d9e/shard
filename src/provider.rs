@@ -1,17 +1,24 @@
+use crate::event::Event;
 use crate::{
     client::Client,
-    protocol::Response,
+    constants::DEFAULT_REFRESH_SECONDS,
+    protocol::{Request, Response},
     repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao},
     sss::{generate_refresh_key, refresh_share, Polynomial},
 };
+use futures::future::FutureExt;
 use futures::prelude::*;
 use libp2p::request_response::ResponseChannel;
 use libp2p::PeerId;
+use std::time::Duration;
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
 };
-use tokio::time::Interval;
+use tokio::{
+    spawn,
+    time::{self, Interval},
+};
 use tracing::{debug, error};
 
 pub fn check_share_owner(entry: &ShareEntry, sender_id: &PeerId) -> bool {
@@ -168,6 +175,72 @@ pub fn dao(
         })))
     };
     Ok(dao)
+}
+
+pub async fn run_loop(
+    db_path: Option<String>,
+    refresh: Option<u64>,
+    local_peer_id: PeerId,
+    network_client: &mut Client,
+    mut network_events: impl Stream<Item = Event> + Unpin,
+) {
+    // check if the db_path is set, if so use sled, otherwise use HashMap
+    let dao = dao(db_path).unwrap();
+
+    // check if refresh is set, if not use a default of 30 minutes
+    let refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
+    debug!("Using refresh_seconds: {}", refresh);
+
+    // spawn a refresh task to run every refresh_seconds seconds
+    let dao_clone = Arc::clone(&dao);
+    let mut network_client_clone = network_client.clone();
+    spawn(async move {
+        let mut interval = time::interval(Duration::from_secs(refresh));
+        refresh_loop(
+            &mut interval,
+            dao_clone,
+            &mut network_client_clone,
+            local_peer_id,
+        )
+        .await;
+    });
+
+    loop {
+        match network_events.next().await {
+            // Reply with the content of the file on incoming requests.
+            Some(Event::InboundRequest { request, channel }) => match request {
+                Request::RegisterShare(req) => {
+                    let sender = PeerId::from_bytes(&req.sender).unwrap();
+                    let _ = execute_register_share(
+                        &req.key,
+                        &sender,
+                        req.share,
+                        channel,
+                        &dao,
+                        network_client,
+                    )
+                    .await;
+                }
+                Request::GetShare(req) => {
+                    let sender = PeerId::from_bytes(&req.sender).unwrap();
+                    let _ = execute_get_share(&req.key, &sender, channel, &dao, network_client).await;
+                }
+                Request::RefreshShare(req) => {
+                    let sender = PeerId::from_bytes(&req.sender).unwrap();
+                    let _ = execute_refresh_share(
+                        &req.key,
+                        &sender,
+                        &req.refresh_key,
+                        Some(channel),
+                        &dao,
+                        network_client,
+                    )
+                    .await;
+                }
+            },
+            e => debug!("unhandled client event: {e:?}"),
+        }
+    }
 }
 
 pub async fn refresh_loop(
