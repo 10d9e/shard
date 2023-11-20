@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use mpcnet::sss::{split_secret, combine_shares, refresh_shares, generate_refresh_key};
+use mpcnet::sss::{combine_shares, generate_refresh_key, refresh_shares, split_secret};
 
 fn bench_split_secret(c: &mut Criterion) {
     c.bench_function("split_secret", |b| {
@@ -44,5 +44,11 @@ fn bench_generate_refresh_key(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_split_secret, bench_combine_shares, bench_refresh_shares, bench_generate_refresh_key);
+criterion_group!(
+    benches,
+    bench_split_secret,
+    bench_combine_shares,
+    bench_refresh_shares,
+    bench_generate_refresh_key
+);
 criterion_main!(benches);

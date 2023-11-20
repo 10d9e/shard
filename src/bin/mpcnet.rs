@@ -1,30 +1,38 @@
-use clap::Parser;
+use clap::{crate_version, Parser};
 
 use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
-use mpcnet::network;
-use mpcnet::repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
-use std::borrow::BorrowMut;
 use std::collections::HashMap;
 use std::error::Error;
-use std::sync::Mutex;
-use tokio::spawn;
+use std::sync::Arc;
+use tokio::time::Duration;
+use tokio::{spawn, time};
 use tracing::debug;
 use tracing::error;
 use tracing_subscriber::EnvFilter;
 
+use mpcnet::constants::DEFAULT_REFRESH_SECONDS;
+use mpcnet::event::Event;
+use mpcnet::network;
 use mpcnet::protocol::Request;
+use mpcnet::provider::{
+    dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
+};
 use mpcnet::sss::combine_shares;
 use mpcnet::sss::generate_refresh_key;
-use mpcnet::sss::refresh_share;
 use mpcnet::sss::split_secret;
 
-use mpcnet::event::Event;
-
 #[derive(Debug, Parser)]
+#[command(name = "MyApp")]
+#[command(author = "lodge <jay.logelin@gmail.com>")]
+#[command(version = crate_version!())]
+#[command(
+    about = "mpcnet threshold network node",
+    long_about = "mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret."
+)]
 enum CliArgument {
     /// Run as a share provider.
     Provide {
@@ -32,16 +40,21 @@ enum CliArgument {
         /// otherwise use memory database
         #[clap(long, short)]
         db_path: Option<String>,
+
+        /// Share refresh interval in seconds
+        // #[clap(long, short, default_value_t = 60)]
+        #[clap(long, short)]
+        refresh: Option<u64>,
     },
-    /// Combine shares to rebuild the secret.
+    /// Combine shares to rebuild a secret.
     Combine {
         /// key of the share to get.
         #[clap(long, short)]
         key: String,
 
-        /// Share threshold.
+        /// Share threshold, if none is provided, uses the number of shares
         #[clap(long, short)]
-        threshold: usize,
+        threshold: Option<usize>,
 
         /// Debug mode displays the shares
         #[clap(long, short)]
@@ -70,16 +83,16 @@ enum CliArgument {
         debug: bool,
     },
 
-    /// Get the list of providers for a share.
+    /// Get the list of share providers for a secret.
     Ls {
-        /// key of the share.
+        /// key of the secret.
         #[clap(long, short)]
         key: String,
     },
 
     /// Refresh the shares
     Refresh {
-        /// key of the share.
+        /// key of the secret.
         #[clap(long, short)]
         key: String,
 
@@ -124,7 +137,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let opt = Opt::parse();
 
-    let (mut network_client, mut network_events, network_event_loop) =
+    let (mut network_client, mut network_events, network_event_loop, local_peer_id) =
         network::new(opt.secret_key_seed).await?;
 
     // Spawn the network task for it to run in the background.
@@ -159,115 +172,69 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     match opt.argument {
         // Providing a share.
-        CliArgument::Provide { db_path } => {
+        CliArgument::Provide { db_path, refresh } => {
             // check if the db_path is set, if so use sled, otherwise use HashMap
-            let dao: Box<dyn ShareEntryDaoTrait> = if db_path.is_some() {
-                debug!("Using Sled DB");
-                Box::new(SledShareEntryDao::new(&db_path.unwrap())?)
-            } else {
-                debug!("Using HashMap DB");
-                Box::new(HashMapShareEntryDao {
-                    map: Mutex::new(HashMap::new()),
-                })
-            };
+            let dao = dao(db_path).unwrap();
 
-            fn check_share_owner(entry: &ShareEntry, sender_id: &PeerId) -> bool {
-                PeerId::from_bytes(&entry.sender).unwrap() == *sender_id
-            }
+            // check if refresh is set, if not use a default of 30 minutes
+            let refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
+            debug!("Using refresh_seconds: {}", refresh);
+
+            // spawn a refresh task to run every refresh_seconds seconds
+            let dao_clone = Arc::clone(&dao);
+            let mut network_client_clone = network_client.clone();
+            spawn(async move {
+                let mut interval = time::interval(Duration::from_secs(refresh));
+                refresh_loop(
+                    &mut interval,
+                    dao_clone,
+                    &mut network_client_clone,
+                    local_peer_id,
+                )
+                .await;
+            });
 
             loop {
                 match network_events.next().await {
                     // Reply with the content of the file on incoming requests.
-                    Some(Event::InboundRequest { request, channel }) => {
-                        match request {
-                            Request::RegisterShare(req) => {
-                                debug!("-- Request: {:#?}.", req);
-                                if let Some(share_entry) = dao.get(&req.key)? {
-                                    debug!("Retrieved Entry: {:?}", share_entry);
-                                    let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                    debug!("-- Sender: {:#?}.", sender);
-
-                                    // check that the peer requesting the share is the owner
-                                    if !check_share_owner(&share_entry, &sender) {
-                                        println!("⚠️ Share exists, not owned by sender {:?}, actual owner: {:?}", sender, share_entry.sender);
-                                        network_client.respond_register_share(false, channel).await;
-                                        continue;
-                                    }
-                                }
-
-                                network_client.start_providing(req.key.clone()).await;
-                                debug!(
-                                    "-- Sender: {:#?}.",
-                                    PeerId::from_bytes(&req.sender).unwrap()
-                                );
-                                dao.insert(
-                                    &req.key.clone(),
-                                    &ShareEntry {
-                                        share: req.share,
-                                        sender: req.sender,
-                                    },
-                                )?;
-                                network_client.respond_register_share(true, channel).await;
-                                println!("🚀 Registered share for key: {:?}.", req.key);
-                            }
-                            Request::GetShare(req) => {
-                                debug!("-- Request: {:#?}.", req);
-                                let share_entry =
-                                    dao.get(&req.key).unwrap().ok_or("Share not found")?;
-
-                                let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                debug!("-- Sender: {:#?}.", sender);
-
-                                // check that the peer requesting the share is the owner
-                                if !check_share_owner(&share_entry, &sender) {
-                                    println!(
-                                        "⚠️ Share not owned by sender {:?}, actual owner: {:?}",
-                                        sender, share_entry.sender
-                                    );
-                                    network_client
-                                        .respond_share((0u8, vec![]), false, channel)
-                                        .await;
-                                    continue;
-                                }
-                                network_client
-                                    .respond_share(share_entry.share.clone(), true, channel)
-                                    .await;
-                                println!("💡 Sent share for key: {:?}.", req.key);
-                            }
-                            Request::RefreshShare(req) => {
-                                debug!("-- Request: {:#?}.", req);
-
-                                let mut share_entry =
-                                    dao.get(&req.key).unwrap().ok_or("Share not found")?;
-
-                                let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                debug!("-- Sender: {:#?}.", sender);
-
-                                // check that the peer requesting the share is the owner
-                                if !check_share_owner(&share_entry, &sender) {
-                                    println!(
-                                        "⚠️ Share not owned by sender {:?}, actual owner: {:?}",
-                                        sender, share_entry.sender
-                                    );
-                                    network_client.respond_refresh_shares(false, channel).await;
-                                    continue;
-                                }
-
-                                debug!("share before refresh: {:?}", share_entry.share);
-                                let _ = refresh_share(
-                                    (
-                                        share_entry.share.0.borrow_mut(),
-                                        share_entry.share.1.borrow_mut(),
-                                    ),
-                                    &req.refresh_key,
-                                );
-                                dao.insert(&req.key, &share_entry)?;
-                                debug!("share after refresh: {:?}", share_entry.share);
-                                network_client.respond_refresh_shares(true, channel).await;
-                                println!("🔄 Refreshed share for key: {:?}", req.key);
-                            }
+                    Some(Event::InboundRequest { request, channel }) => match request {
+                        Request::RegisterShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_register_share(
+                                &req.key,
+                                &sender,
+                                req.share,
+                                req.threshold,
+                                channel,
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
                         }
-                    }
+                        Request::GetShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_get_share(
+                                &req.key,
+                                &sender,
+                                channel,
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
+                        }
+                        Request::RefreshShare(req) => {
+                            let sender = PeerId::from_bytes(&req.sender).unwrap();
+                            execute_refresh_share(
+                                &req.key,
+                                &sender,
+                                &req.refresh_key,
+                                Some(channel),
+                                &dao,
+                                &mut network_client,
+                            )
+                            .await?;
+                        }
+                    },
                     e => debug!("unhandled client event: {e:?}"),
                 }
             }
@@ -290,6 +257,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
 
             debug!("Found {} providers for share {}.", providers.len(), key);
+            // get the threshold number of shares, if threshold is None, use the number of providers
+            let threshold = threshold.unwrap_or_else(|| providers.len());
 
             // Request a share from each node.
             let requests = providers.into_iter().map(|p| {
@@ -329,12 +298,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // if the debug flag is set, print the shares
             if debug {
                 println!("🐛 [debug] shares: ");
-                // print the shares in a more readable hex format
-                for (_, v) in shares_map.iter() {
-                    println!("  {}", hex::encode(v));
+                let mut items: Vec<_> = shares_map.iter().collect();
+                items.sort_by(|a, b| a.1.cmp(b.1));
+
+                // Now items is sorted by key, and you can iterate over it to get the values in order
+                for (_, value) in items {
+                    println!("  {}", hex::encode(value));
                 }
             }
-
             println!(
                 "🔑 secret: {:#?}",
                 String::from_utf8(secret.unwrap()).unwrap()
@@ -377,11 +348,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             debug!("*** Found {} providers.", providers.len());
 
+            // select shares number of providers
+            let rng = &mut rand::thread_rng();
+            let providers_sample = providers.into_iter().choose_multiple(rng, shares);
+
             // make sure to only send shares to only shares number of providers
-            let requests = providers
+            let requests = providers_sample
                 .clone()
                 .into_iter()
-                .take(shares)
                 .enumerate()
                 .map(|(i, p)| {
                     let mut network_client = network_client.clone();
@@ -393,6 +367,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             .request_register_share(
                                 (share_id, share.unwrap().to_vec()),
                                 k.to_string(),
+                                threshold as u64,
                                 p,
                                 sender,
                             )
@@ -413,16 +388,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             if debug {
                 println!("🐛 [debug] shares: ");
-                // print the shares in a more readable hex format
-                for (_, v) in split_shares.iter() {
-                    println!("  {}", hex::encode(v));
+                let mut items: Vec<_> = split_shares.iter().collect();
+                items.sort_by(|a, b| a.1.cmp(b.1));
+
+                // Now items is sorted by key, and you can iterate over it to get the values in order
+                for (_, value) in items {
+                    println!("  {}", hex::encode(value));
                 }
             }
 
             println!("✂️  Secret has been split and distributed across network.");
             println!("    key: {:#?}", key);
             println!("    threshold: {:#?}", threshold);
-            println!("    providers: {:#?}", providers)
+            println!("    providers: {:#?}", providers_sample)
         }
         CliArgument::Ls { key } => {
             let providers = network_client.get_providers(key.clone()).await;
@@ -467,7 +445,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Await all of the requests and ensure they all succeed
             futures::future::join_all(requests).await;
 
-            // println!("Found {} providers for share {}.", providers.len(), key);
+            debug!("Found {} providers for share {}.", providers.len(), key);
             print!(
                 "🔄 Refreshed {} shares for key: {:?}",
                 providers.len(),
