@@ -561,8 +561,6 @@
 <a href="#561" id="561">561</a>
 <a href="#562" id="562">562</a>
 <a href="#563" id="563">563</a>
-<a href="#564" id="564">564</a>
-<a href="#565" id="565">565</a>
 </pre></div><pre class="rust"><code><span class="kw">extern crate </span>rand;
 
 <span class="kw">use </span>core::fmt;
@@ -1114,15 +1112,13 @@
             .map(|(<span class="kw-2">&amp;</span>key, value)| (key, value.clone()))
             .collect();
 
-        <span class="comment">//assert!(subset.len() == threshold);
-
-        </span><span class="kw">let </span>recovered = combine_shares(<span class="kw-2">&amp;</span>subset);
+        <span class="kw">let </span>recovered = combine_shares(<span class="kw-2">&amp;</span>subset);
         <span class="macro">assert!</span>(recovered.is_some());
 
         <span class="macro">println!</span>(<span class="string">&quot;actual:    {}&quot;</span>, hex::encode(<span class="kw-2">&amp;</span>secret));
         <span class="macro">println!</span>(<span class="string">&quot;recovered: {}&quot;</span>, hex::encode(recovered.clone().unwrap()));
 
-        <span class="macro">assert!</span>(recovered.unwrap().as_slice() == secret);
+        <span class="macro">assert_ne!</span>(recovered.unwrap().as_slice(), secret);
 
         <span class="prelude-val">Ok</span>(())
 
