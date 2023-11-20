@@ -129,3 +129,6 @@ pub mod provider;
 
 /// The `constants` module defines various constants used in the library.
 pub mod constants;
+
+/// The `config` module defines the `Config` struct, which is used to configure the network.
+pub mod config;

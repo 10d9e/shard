@@ -5,6 +5,7 @@ use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
+use shard::config::ShardConfig;
 use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
@@ -31,7 +32,7 @@ use shard::sss::split_secret;
 #[command(version = crate_version!())]
 #[command(
     about = "SHARD - SHARD Holds And Refreshes Data",
-    long_about = "SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default"
+    long_about = "SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default. Default configuration is located at ~/.shard/conf.toml."
 )]
 enum CliArgument {
     /// Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval, set using the --refresh-interval flag.
@@ -128,6 +129,7 @@ struct Opt {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let config = ShardConfig::new()?;    
     let sender = get_sender();
     debug!("sender ID: {}", sender);
 
@@ -155,6 +157,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .await
             .expect("Listening not to fail."),
     };
+
+    if let Some(addr) = config.bootstrapper {
+        let Some(Protocol::P2p(peer_id)) = addr.iter().last() else {
+            return Err("Expect peer multiaddr to contain peer ID.".into());
+        };
+
+        // if the peer is the same as the local peer, don't dial
+        if peer_id != local_peer_id {
+            debug!("👢 Bootstrapping to peer at {}.", addr);
+            network_client
+                .dial(peer_id, addr)
+                .await
+                .expect("Dial to succeed");
+        }
+    }
 
     // In case the user provided an address of a peer on the CLI, dial it.
     if let Some(addr) = opt.peer {
@@ -256,7 +273,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Locate all nodes providing the share.
             let providers = network_client.get_providers(key.clone()).await;
             if providers.is_empty() {
-                return Err(format!("Could not find provider for share {key}.").into());
+                return Err(format!("Could not find providers for share key: {key}.").into());
             }
 
             debug!("Found {} providers for share {}.", providers.len(), key);
@@ -309,13 +326,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     println!("  {}", hex::encode(value));
                 }
             }
+            
+            let secret = secret.expect("Unable to combine shares at threshold");
+            let secret_string = String::from_utf8(secret).unwrap_or_else(|_| {
+                format!("Error: Unable to combine shares at threshold")
+            });
 
-            println!(
-                "🔑 secret: {:#?}",
-                hex::encode(secret.unwrap())
-            );
-
-         
+            println!("🔑 secret: {:#?}", secret_string);
         }
 
         // Splitting a secret.
@@ -411,7 +428,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         CliArgument::Ls { key } => {
             let providers = network_client.get_providers(key.clone()).await;
             if providers.is_empty() {
-                return Err(format!("Could not find provider for share {key}.").into());
+                return Err(format!("Could not find provider for share key: {key}.").into());
             }
 
             // println!("Found {} providers for share {}.", providers.len(), key);
@@ -427,7 +444,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             let providers = network_client.get_providers(key.clone()).await;
             if providers.is_empty() {
-                return Err(format!("Could not find provider for share {key}.").into());
+                return Err(format!("Could not find provider for share key: {key}.").into());
             }
 
             debug!("Found {} providers for share {}.", providers.len(), key);

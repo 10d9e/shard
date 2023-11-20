@@ -16,7 +16,14 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    command: shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide --db-path .db
+    #command: shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide --db-path .db
+    command: >
+      /bin/sh -c "
+      mkdir -p .shard &&
+      echo 'bootstrapper = \"/ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X\"' > .shard/conf.toml &&
+      shard provide --db-path .db
+      "
+
     depends_on:
       - bootstrapper
     scale: 9

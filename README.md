@@ -77,17 +77,17 @@ This command compiles the 'shard' project in release mode, ensuring optimal perf
 The bootstrapper node is essential for the network to operate. It acts as the initial point of contact for other nodes. To start the bootstrapper node, use the following command:
 
 ```bash
-./target/release/shard --listen-address /ip4/127.0.0.1/tcp/40837 --secret-key-seed 1 provide
+./target/release/shard --listen-address /ip4/127.0.0.1/tcp/40837 --secret-key-seed 1 provide --refresh-interval 10
 ```
 
-This command starts 'shard' as a bootstrapper node, listening on address '/ip4/127.0.0.1/tcp/40837' and using the secret key seed '1'.
+This command starts 'shard' as a bootstrapper node, listening on address '/ip4/127.0.0.1/tcp/40837' and using the secret key seed '1'. ~Note: Here we are overriding the default `--refresh-interval` to run every 10 seconds, from the default 30 minutes, to demonstrate provider refreshing~
 
 **3. Start Provider Nodes**
 
 You'll need multiple provider nodes to participate in the network. (To run locally we will just use an in-memory database, however, in a real world scenario, we would use the `db-path` option to define the path for share persistence.) To start a provider node, open multiple terminals (4 in this case) and run the following command in 4 separate terminals:
 
 ```bash
-./target/release/shard --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide
+./target/release/shard --peer provide
 ```
 
 Each command starts a provider node, and they all connect to the bootstrapper node specified by the `--peer` argument.
@@ -97,7 +97,7 @@ Each command starts a provider node, and they all connect to the bootstrapper no
 To interact with the network, you'll need a client node. Open another terminal and run the following command:
 
 ```bash
-❯ ./target/release/shard --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X split --threshold 2 --shares 5 --secret butterbeer --key test --verbose
+❯ ./target/release/shard split --threshold 3 --shares 5 --secret butterbeer --key test --verbose
 
 🐛 [debug] shares: 
   6720c971ea73b326ea88
@@ -107,7 +107,7 @@ To interact with the network, you'll need a client node. Open another terminal a
   6d8aae7be9710ca0e961
 ✂️  Secret has been split and distributed across network.
     key: "test"
-    threshold: 2
+    threshold: 3
     providers: {
     PeerId(
         "12D3KooWRbMntkocaizeD29DyhwZ5oujjRWJY8uTaUb2LkhrPF6W",
@@ -134,7 +134,7 @@ This command splits a secret into 5 shares with a threshold of 2 and broadcasts 
 To query the network for all nodes hosting shares for a specific key (in this case, 'test'), use the following command:
 
 ```bash
-❯ ./target/release/shard --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X ls --key test
+❯ ./target/release/shard ls --key test
 ✂️  Share Providers: {
     PeerId(
         "12D3KooWEVAbvQvN3iH68DQW3wVDzHEwNyfLo7deW1jEQBGY1rkd",
@@ -161,7 +161,7 @@ This command retrieves information about nodes hosting shares for the specified 
 The refresh command can be run as many times as you want, and it doesn't require client interaction. ~Note: that this is an interactive version of refreshing. Each node performs it's own refresh operations that propagates through the network automatically~ Use the following command to refresh shares:
 
 ```bash
-❯ ./target/release/shard --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X refresh --key test --threshold 2 --size 10
+❯ ./target/release/shard refresh --key test --threshold 3 --size 10
 🔄 Refreshed 5 shares for key: "test"
 ```
 
@@ -172,11 +172,23 @@ This command refreshes the shares for the 'test' key with a threshold of 2 and a
 To reassemble the secret, you'll need to randomly select 2 providers corresponding to the threshold. Use the following command:
 
 ```bash
-❯ ./target/release/shard --peer /ip4/127.0.0.1/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X combine --key test --verbose
-🐛 [debug] shares: 
-  9f236113dd50807ae895
-  c2478ca20d6c3c9b1e2f
+❯ ./target/release/shard combine --key test --verbose
+🐛 shares: 
+  32a48be4c9fb1c698580
+  3e0d5de4d92bcb127064
+  6edca27475a2b51e9096
+  9043ef808c5a8bfdc9a0
+  cc3bc6103003228adcb6
 🔑 secret: "butterbeer"
+
+Attempting to reassemble below the threshold results in an error:
+
+```bash
+❯ ./target/release/shard combine --key test --verbose --threshold 2
+🐛 shares: 
+  425ecc0bba2487cd7405
+  c96f907814d92f7d6429
+🔑 secret: "Error: Unable to combine shares at threshold"
 ```
 
 This command combines the shares from the selected providers to reassemble the secret. You can use the `--verbose` flag to view share bytes during the process.
@@ -218,33 +230,7 @@ docker exec -it client shard --peer /ip4/10.5.0.5/tcp/40837/p2p/12D3KooWPjceQrSw
 ```bash
 ❯ docker exec -it client /bin/bash 
 root@71b4dce52922:/app# shard --help
-SHARD threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default
-
-Usage: shard [OPTIONS] <COMMAND>
-
-Commands:
-  provide  Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval, set using the --refresh-interval flag
-  combine  Combine shares from the network to rebuild a secret
-  split    Split a secret into shares and propagate them across the network
-  ls       Get the list of share providers for a secret
-  refresh  Refresh the shares
-  help     Print this message or the help of the given subcommand(s)
-
-Options:
-  -s, --secret-key-seed <SECRET_KEY_SEED>
-          Fixed value to generate deterministic peer ID
-
-  -p, --peer <PEER>
-          Address of a peer to connect to
-
-  -l, --listen-address <LISTEN_ADDRESS>
-          Address to listen on
-
-  -h, --help
-          Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
+SHARD threshold network allows users to split ...
 ```
 
 Observe the node participants log statements with each command:
