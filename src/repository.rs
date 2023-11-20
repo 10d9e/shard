@@ -19,7 +19,7 @@ use std::sync::Mutex;
 ///
 /// ```rust
 /// use mpcnet::repository::ShareEntry;
-/// 
+///
 /// let share_entry = ShareEntry {
 ///     share: (1, vec![2, 3, 4]),
 ///     sender: vec![5, 6, 7],
@@ -35,7 +35,7 @@ pub struct ShareEntry {
 ///
 /// This trait specifies the methods for inserting, retrieving, updating, and deleting `ShareEntry` objects
 /// in a data store.
-pub trait ShareEntryDaoTrait {
+pub trait ShareEntryDaoTrait: Send + Sync {
     /// Inserts a `ShareEntry` into the data store.
     ///
     /// # Arguments
@@ -58,6 +58,8 @@ pub trait ShareEntryDaoTrait {
     ///
     /// A `Result` containing an `Option<ShareEntry>`. `None` if the key does not exist.
     fn get(&self, key: &str) -> Result<Option<ShareEntry>, Box<dyn Error>>;
+
+    fn get_all(&self) -> Result<Vec<(String, ShareEntry)>, Box<dyn Error>>;
 
     /// Updates an existing `ShareEntry` in the data store.
     ///
@@ -111,7 +113,7 @@ impl SledShareEntryDao {
     ///
     /// ```ignore
     /// use mpcnet::repository::SledShareEntryDao;
-    /// 
+    ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// ```
     pub fn new(db_path: &str) -> Result<Self, Box<dyn Error>> {
@@ -121,7 +123,6 @@ impl SledShareEntryDao {
 }
 
 impl ShareEntryDaoTrait for SledShareEntryDao {
-
     /// Inserts a new `ShareEntry` into the Sled database.
     ///
     /// This method serializes the `ShareEntry` into a JSON string and stores it in the database under the provided key.
@@ -141,7 +142,7 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// use mpcnet::repository::ShareEntry;
     /// use mpcnet::repository::SledShareEntryDao;
     /// use mpcnet::repository::ShareEntryDaoTrait;
-    /// 
+    ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6] };
     /// dao.insert("some_key", &entry);
@@ -169,7 +170,7 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// ```ignore
     /// use mpcnet::repository::ShareEntryDaoTrait;
     /// use mpcnet::repository::SledShareEntryDao;
-    /// 
+    ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let entry = dao.get("some_key").unwrap();
     /// ```
@@ -180,6 +181,16 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
         } else {
             Ok(None)
         }
+    }
+
+    fn get_all(&self) -> Result<Vec<(String, ShareEntry)>, Box<dyn Error>> {
+        let mut entries = Vec::new();
+        for entry in self.db.iter() {
+            let (key, value) = entry?;
+            let entry: ShareEntry = serde_json::from_slice(&value)?;
+            entries.push((String::from_utf8(key.to_vec())?, entry));
+        }
+        Ok(entries)
     }
 
     /// Updates an existing `ShareEntry` in the Sled database.
@@ -201,7 +212,7 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// use mpcnet::repository::ShareEntry;
     /// use mpcnet::repository::SledShareEntryDao;
     /// use mpcnet::repository::ShareEntryDaoTrait;
-    /// 
+    ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12] };
     /// dao.update("some_key", &new_entry).unwrap();
@@ -225,7 +236,7 @@ impl ShareEntryDaoTrait for SledShareEntryDao {
     /// ```ignore
     /// use mpcnet::repository::ShareEntryDaoTrait;
     /// use mpcnet::repository::SledShareEntryDao;
-    /// 
+    ///
     /// let dao = SledShareEntryDao::new("path/to/db").unwrap();
     /// dao.delete("some_key");
     /// ```
@@ -240,7 +251,6 @@ pub struct HashMapShareEntryDao {
 }
 
 impl ShareEntryDaoTrait for HashMapShareEntryDao {
-
     /// Inserts a new `ShareEntry` into the HashMap.
     ///
     /// This method locks the HashMap for thread safety and inserts the provided entry.
@@ -262,7 +272,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use std::sync::Mutex;
     /// use mpcnet::repository::HashMapShareEntryDao;
     /// use mpcnet::repository::ShareEntryDaoTrait;
-    /// 
+    ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
     /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6] };
     /// dao.insert("some_key", &entry).unwrap();
@@ -289,13 +299,22 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
-    /// 
+    ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
     /// let entry = dao.get("some_key").unwrap();
     /// ```
     fn get(&self, key: &str) -> Result<Option<ShareEntry>, Box<dyn Error>> {
         let map = self.map.lock().unwrap();
         Ok(map.get(key).cloned())
+    }
+
+    fn get_all(&self) -> Result<Vec<(String, ShareEntry)>, Box<dyn Error>> {
+        let map = self.map.lock().unwrap();
+        let mut entries = Vec::new();
+        for (key, value) in map.iter() {
+            entries.push((key.clone(), value.clone()));
+        }
+        Ok(entries)
     }
 
     /// Updates an existing `ShareEntry` in the HashMap.
@@ -319,7 +338,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
-    /// 
+    ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
     /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12] };
     /// dao.update("some_key", &new_entry);
@@ -350,7 +369,7 @@ impl ShareEntryDaoTrait for HashMapShareEntryDao {
     /// use mpcnet::repository::{ShareEntry, ShareEntryDaoTrait, HashMapShareEntryDao};
     /// use std::collections::HashMap;
     /// use std::sync::Mutex;
-    /// 
+    ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
     /// dao.delete("some_key").unwrap();
     /// ```

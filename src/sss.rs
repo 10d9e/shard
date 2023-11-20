@@ -21,7 +21,6 @@ pub struct Polynomial {
 }
 
 impl Polynomial {
-    
     /// Constructs a new polynomial of a given degree with random coefficients,
     /// where the constant term is the provided secret.
     ///
@@ -130,7 +129,7 @@ impl<'de> Deserialize<'de> for Polynomial {
 /// # Examples
 /// ```rust
 /// use mpcnet::sss::split_secret;
-/// 
+///
 /// let secret = b"hello world";
 /// let threshold = 3;
 /// let total_shares = 5;
