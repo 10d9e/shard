@@ -21,3 +21,6 @@ Cargo.lock
 
 # Ignore all local .notes files
 .notes
+
+# Ignore local .shard directory
+.shard/
