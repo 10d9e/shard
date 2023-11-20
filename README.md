@@ -1,7 +1,7 @@
 # mpcnet 🔑
 
 [![build-badge](https://github.com/jlogelin/mpcnet/actions/workflows/build.yml/badge.svg)](https://nightly.link/jlogelin/mpcnet/workflows/build/main/binaries.zip)
-[![document-badge](https://github.com/jlogelin/mpcnet/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/mpcnet)
+[![document-badge](https://github.com/jlogelin/mpcnet/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/mpcnet/mpcnet)
 [![license-badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
 MPCNet is a decentralized application built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across a distributed network, combine them to reconstruct the original secret, and refresh these shares to maintain security over time.
