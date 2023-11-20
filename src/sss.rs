@@ -549,15 +549,13 @@ mod tests {
             .map(|(&key, value)| (key, value.clone()))
             .collect();
 
-        //assert!(subset.len() == threshold);
-
         let recovered = combine_shares(&subset);
         assert!(recovered.is_some());
 
         println!("actual:    {}", hex::encode(&secret));
         println!("recovered: {}", hex::encode(recovered.clone().unwrap()));
 
-        assert!(recovered.unwrap().as_slice() == secret);
+        assert_ne!(recovered.unwrap().as_slice(), secret);
 
         Ok(())
 
