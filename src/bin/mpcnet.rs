@@ -182,14 +182,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 })))
             };
 
-            if refresh.is_some() {
-                debug!("Using refresh_seconds: {}", refresh.unwrap());
+            // check if refresh is set, if not use a default of 30 minutes
+            let refresh = refresh.unwrap_or(30 * 60);
+
+            //if refresh.is_some() {
+                debug!("Using refresh_seconds: {}", refresh);
 
                 // spawn a refresh task to run every refresh_seconds seconds
                 let dao_clone = Arc::clone(&dao);
                 let mut network_client_clone = network_client.clone();
                 spawn(async move {
-                    let mut interval = time::interval(Duration::from_secs(refresh.unwrap()));
+                    let mut interval = time::interval(Duration::from_secs(refresh));
                     loop {
                         interval.tick().await;
                         // Your task here
@@ -262,7 +265,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         }
                     }
                 });
-            };
+            //};
 
             loop {
                 match network_events.next().await {
