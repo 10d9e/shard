@@ -24,12 +24,22 @@ All commands, except for `provide` are for clients to interface with the network
 
 ```bash
 ❯ mpcnet --help
-mpcnet threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the mpcnet, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default
+mpcnet threshold network allows users to split secrets into shares, distribute them to share providers,
+and recombine them at a threshold to rebuild the secret. A node will provide shares to the mpcnet, and
+refresh them automatically at a specified interval. It works by generating a new refresh key and then
+updating the shares across the network. The provider node persists all shares to a database, and will
+use the database on restart. Note that the database is in-memory by default, but can be set to a file-based
+database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that
+registers the share with the network, identified by the client's peer ID, which is derived from their public
+key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing
+the overall security of the network over time. The refresh interval is set using the --refresh-interval
+flag, and is set to 30 minutes by default
 
 Usage: mpcnet [OPTIONS] <COMMAND>
 
 Commands:
-  provide  Run a share provider node that provides shares to mpcnet users, and refresh them automatically at a specified interval, set using the --refresh-interval flag
+  provide  Run a share provider node that provides shares to mpcnet users, and refresh them automatically
+            at a specified interval, set using the --refresh-interval flag
   combine  Combine shares from the network to rebuild a secret
   split    Split a secret into shares and propagate them across the network
   ls       Get the list of share providers for a secret
