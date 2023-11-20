@@ -4,11 +4,10 @@ use futures::prelude::*;
 use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
-use mpcnet::repository::{HashMapShareEntryDao, ShareEntryDaoTrait, SledShareEntryDao};
 use mpcnet::provider::{
-    execute_get_share, execute_refresh_share, execute_register_share,
-    refresh_loop, dao,
+    dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
 };
+use mpcnet::repository::{HashMapShareEntryDao, ShareEntryDaoTrait, SledShareEntryDao};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
@@ -306,7 +305,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     println!("  {}", hex::encode(value));
                 }
             }
-
             println!(
                 "🔑 secret: {:#?}",
                 String::from_utf8(secret.unwrap()).unwrap()
