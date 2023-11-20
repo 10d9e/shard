@@ -21,10 +21,34 @@ use tokio::{
 };
 use tracing::{debug, error};
 
+/// Checks if the given `PeerId` is the owner of the `ShareEntry`.
+///
+/// # Arguments
+/// * `entry` - A reference to the `ShareEntry` to check.
+/// * `sender_id` - The `PeerId` to validate against the owner in the `ShareEntry`.
+///
+/// # Returns
+/// Returns `true` if `sender_id` matches the owner in the `ShareEntry`, otherwise `false`.
 pub fn check_share_owner(entry: &ShareEntry, sender_id: &PeerId) -> bool {
     PeerId::from_bytes(&entry.sender).unwrap() == *sender_id
 }
 
+/// Executes the share refresh logic asynchronously.
+///
+/// This function retrieves the specified `ShareEntry` from the database, refreshes its share,
+/// and then updates the entry in the database. If a response channel is provided, it sends a
+/// response back to the network client.
+///
+/// # Arguments
+/// * `key` - The key identifying the `ShareEntry` to refresh.
+/// * `sender` - The `PeerId` of the sender requesting the refresh.
+/// * `refresh_key` - A slice of `Polynomial` used for refreshing the share.
+/// * `channel` - An optional `ResponseChannel<Response>` for sending responses.
+/// * `dao` - A shared and mutable reference to the data access object (DAO) trait object.
+/// * `network_client` - A mutable reference to the network client for responding to requests.
+///
+/// # Returns
+/// Returns a `Result<(), Box<dyn std::error::Error>>`, indicating success or failure.
 pub async fn execute_refresh_share(
     key: &str,
     sender: &PeerId,
@@ -86,6 +110,23 @@ pub async fn execute_refresh_share(
     Ok(())
 }
 
+/// Executes the share registration logic asynchronously.
+///
+/// This function checks for the existence of a share in the database and registers a new
+/// share if it doesn't exist or if the sender is the owner. It then sends a response back
+/// to the network client.
+///
+/// # Arguments
+/// * `key` - The key identifying the share to register.
+/// * `sender` - The `PeerId` of the sender requesting the registration.
+/// * `share` - A tuple containing the share identifier and data.
+/// * `threshold` - The threshold value for the share.
+/// * `channel` - The `ResponseChannel<Response>` for sending responses.
+/// * `dao` - A shared and mutable reference to the DAO trait object.
+/// * `network_client` - A mutable reference to the network client.
+///
+/// # Returns
+/// Returns a `Result<(), Box<dyn std::error::Error>>`, indicating success or failure.
 pub async fn execute_register_share(
     key: &str,
     sender: &PeerId,
@@ -127,6 +168,20 @@ pub async fn execute_register_share(
     Ok(())
 }
 
+/// Executes the logic to retrieve and send a share asynchronously.
+///
+/// This function retrieves a `ShareEntry` from the database and sends it back to the requester
+/// via the network client, if the requester is the owner of the share.
+///
+/// # Arguments
+/// * `key` - The key identifying the share to retrieve.
+/// * `sender` - The `PeerId` of the sender requesting the share.
+/// * `channel` - The `ResponseChannel<Response>` for sending the share.
+/// * `dao` - A shared and mutable reference to the DAO trait object.
+/// * `network_client` - A mutable reference to the network client.
+///
+/// # Returns
+/// Returns a `Result<(), Box<dyn std::error::Error>>`, indicating success or failure.
 pub async fn execute_get_share(
     key: &str,
     sender: &PeerId,
@@ -162,6 +217,17 @@ pub async fn execute_get_share(
     Ok(())
 }
 
+/// Creates and returns a DAO instance based on the specified database path.
+///
+/// If a path is provided, a Sled database DAO is created; otherwise, an in-memory HashMap
+/// DAO is used. This allows flexibility in choosing the underlying storage mechanism.
+///
+/// # Arguments
+/// * `db_path` - An optional string slice representing the path to the database.
+///
+/// # Returns
+/// Returns a `Result<Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>>`, encapsulating the DAO in a
+/// thread-safe, reference-counted pointer, or an error if the database cannot be initialized.
 pub fn dao(
     db_path: Option<String>,
 ) -> Result<Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>, Box<dyn std::error::Error>> {
@@ -180,6 +246,17 @@ pub fn dao(
     Ok(dao)
 }
 
+/// Runs the main event loop asynchronously.
+///
+/// This function initializes the DAO and starts a periodic refresh task. It also listens for
+/// incoming network events and handles them appropriately.
+///
+/// # Arguments
+/// * `db_path` - An optional string slice for the database path.
+/// * `refresh` - An optional duration in seconds for the refresh interval.
+/// * `local_peer_id` - The `PeerId` of the local node.
+/// * `network_client` - A mutable reference to the network client.
+/// * `network_events` - A stream of network events to listen to.
 pub async fn run_loop(
     db_path: Option<String>,
     refresh: Option<u64>,
@@ -248,6 +325,16 @@ pub async fn run_loop(
     }
 }
 
+/// Periodically refreshes shares in a separate asynchronous task.
+///
+/// This function iterates over all shares in the database at regular intervals and refreshes
+/// them. It also communicates with other peers in the network to synchronize the refreshed shares.
+///
+/// # Arguments
+/// * `interval` - A mutable reference to a time interval generator.
+/// * `dao_clone` - A cloned reference to the DAO, wrapped in an Arc and Mutex.
+/// * `network_client_clone` - A cloned mutable reference to the network client.
+/// * `local_peer_id` - The `PeerId` of the local node.
 pub async fn refresh_loop(
     interval: &mut Interval,
     dao_clone: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
