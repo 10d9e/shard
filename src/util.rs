@@ -1,15 +1,15 @@
-use std::sync::{Arc, Mutex};
-use futures::prelude::*;
 use crate::{
     client::Client,
     protocol::Response,
     repository::{ShareEntry, ShareEntryDaoTrait},
-    sss::{refresh_share, Polynomial, generate_refresh_key},
+    sss::{generate_refresh_key, refresh_share, Polynomial},
 };
+use futures::prelude::*;
 use libp2p::request_response::ResponseChannel;
 use libp2p::PeerId;
-use tracing::{debug, error};
+use std::sync::{Arc, Mutex};
 use tokio::time::Interval;
+use tracing::{debug, error};
 
 pub fn check_share_owner(entry: &ShareEntry, sender_id: &PeerId) -> bool {
     PeerId::from_bytes(&entry.sender).unwrap() == *sender_id
@@ -23,9 +23,6 @@ pub async fn execute_refresh_share(
     dao: &Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
     network_client: &mut Client,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    //Request::RefreshShare(req) => {
-    //debug!("-- Request: {:#?}.", req);
-
     let mut share_entry: ShareEntry = dao
         .lock()
         .unwrap()
@@ -42,13 +39,14 @@ pub async fn execute_refresh_share(
         if !check_share_owner(&share_entry, sender) {
             println!(
                 "⚠️ Share not owned by sender {:?}, actual owner: {:?}",
-                sender, PeerId::from_bytes(&share_entry.sender).unwrap()
+                sender,
+                PeerId::from_bytes(&share_entry.sender).unwrap()
             );
-            
-                network_client
-                    .respond_refresh_shares(false, channel.unwrap())
-                    .await;
-            
+
+            network_client
+                .respond_refresh_shares(false, channel.unwrap())
+                .await;
+
             return Ok(());
         }
     }
@@ -78,7 +76,85 @@ pub async fn execute_refresh_share(
     Ok(())
 }
 
-pub async fn refresh_loop(interval: &mut Interval, dao_clone: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>, network_client_clone: &mut Client, local_peer_id: PeerId) {
+pub async fn execute_register_share(
+    key: &str,
+    sender: &PeerId,
+    share: (u8, Vec<u8>),
+    channel: ResponseChannel<Response>,
+    dao: &Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
+    network_client: &mut Client,
+) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(share_entry) = dao.lock().unwrap().get(key)? {
+        debug!("Retrieved Entry: {:?}", share_entry);
+        debug!("-- Sender: {:#?}.", sender);
+
+        // check that the peer requesting the share is the owner
+        if !check_share_owner(&share_entry, &sender) {
+            println!(
+                "⚠️ Share exists, not owned by sender {:?}, actual owner: {:?}",
+                sender, share_entry.sender
+            );
+            network_client.respond_register_share(false, channel).await;
+            return Ok(());
+        }
+    }
+
+    network_client.start_providing(key.to_string()).await;
+    debug!("-- Sender: {:#?}.", sender);
+    dao.lock().unwrap().insert(
+        key,
+        &ShareEntry {
+            share: share,
+            sender: sender.to_bytes(),
+        },
+    )?;
+    network_client.respond_register_share(true, channel).await;
+    println!("🚀 Registered share for key: {:?}.", key);
+
+    Ok(())
+}
+
+pub async fn execute_get_share(
+    key: &str,
+    sender: &PeerId,
+    channel: ResponseChannel<Response>,
+    dao: &Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
+    network_client: &mut Client,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let share_entry = dao
+        .lock()
+        .unwrap()
+        .get(&key)
+        .unwrap()
+        .ok_or("Share not found")?;
+
+    debug!("-- Sender: {:#?}.", sender);
+
+    // check that the peer requesting the share is the owner
+    if !check_share_owner(&share_entry, &sender) {
+        println!(
+            "⚠️ Share not owned by sender {:?}, actual owner: {:?}",
+            sender, share_entry.sender
+        );
+        network_client
+            .respond_share((0u8, vec![]), false, channel)
+            .await;
+        return Ok(());
+    }
+    network_client
+        .respond_share(share_entry.share.clone(), true, channel)
+        .await;
+    println!("💡 Sent share for key: {:?}.", key);
+
+    Ok(())
+}
+
+pub async fn refresh_loop(
+    interval: &mut Interval,
+    dao_clone: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>,
+    network_client_clone: &mut Client,
+    local_peer_id: PeerId,
+) {
     loop {
         interval.tick().await;
         // Your task here
