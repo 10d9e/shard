@@ -380,6 +380,7 @@
 <a href="#380" id="380">380</a>
 <a href="#381" id="381">381</a>
 <a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>sled::Db;
 <span class="kw">use </span>std::collections::HashMap;
@@ -405,6 +406,7 @@
 /// let share_entry = ShareEntry {
 ///     share: (1, vec![2, 3, 4]),
 ///     sender: vec![5, 6, 7],
+///     threshold: 2,
 /// };
 /// ```
 </span><span class="attr">#[derive(Serialize, Deserialize, Debug, Clone)]
@@ -657,7 +659,7 @@
     /// use mpcnet::repository::ShareEntryDaoTrait;
     ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
-    /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6] };
+    /// let entry = ShareEntry { share: (1, vec![1, 2, 3]), sender: vec![4, 5, 6], threshold: 2 };
     /// dao.insert(&quot;some_key&quot;, &amp;entry).unwrap();
     /// ```
     </span><span class="kw">fn </span>insert(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str, entry: <span class="kw-2">&amp;</span>ShareEntry) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
@@ -723,7 +725,7 @@
     /// use std::sync::Mutex;
     ///
     /// let dao = HashMapShareEntryDao { map: Mutex::new(HashMap::new()) };
-    /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12] };
+    /// let new_entry = ShareEntry { share: (1, vec![7, 8, 9]), sender: vec![10, 11, 12], threshold: 2 };
     /// dao.update(&quot;some_key&quot;, &amp;new_entry);
     /// ```
     </span><span class="kw">fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str, entry: <span class="kw-2">&amp;</span>ShareEntry) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
