@@ -122,7 +122,7 @@ pub mod repository;
 /// shares to enhance security.
 pub mod sss;
 
-/// The `util` module contains various utility functions used in the library. It includes functions
-/// for generating random numbers, converting between different data types, and other miscellaneous
-/// functionalities.
-pub mod util;
+/// The `provider` module defines the `Provider` trait, which is used to implement different
+/// providers for the network. A provider is responsible for managing the network state, including
+/// the secret shares and the peer list.
+pub mod provider;

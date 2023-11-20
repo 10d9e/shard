@@ -5,9 +5,9 @@ use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
 use mpcnet::repository::{HashMapShareEntryDao, ShareEntryDaoTrait, SledShareEntryDao};
-use mpcnet::util::{
+use mpcnet::provider::{
     execute_get_share, execute_refresh_share, execute_register_share,
-    refresh_loop,
+    refresh_loop, dao,
 };
 use rand::seq::IteratorRandom;
 use rand::RngCore;
@@ -28,7 +28,7 @@ use mpcnet::sss::split_secret;
 
 #[derive(Debug, Parser)]
 #[command(name = "MyApp")]
-#[command(author = "Lodge <jay.logelin@gmail.com>")]
+#[command(author = "lodge <jay.logelin@gmail.com>")]
 #[command(version = crate_version!())]
 #[command(
     about = "mpcnet threshold network node",
@@ -175,17 +175,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Providing a share.
         CliArgument::Provide { db_path, refresh } => {
             // check if the db_path is set, if so use sled, otherwise use HashMap
-            let dao: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>> = if db_path.is_some() {
-                debug!("Using Sled DB");
-                Arc::new(Mutex::new(Box::new(SledShareEntryDao::new(
-                    &db_path.unwrap(),
-                )?)))
-            } else {
-                debug!("Using HashMap DB");
-                Arc::new(Mutex::new(Box::new(HashMapShareEntryDao {
-                    map: Mutex::new(HashMap::new()),
-                })))
-            };
+            let dao = dao(db_path).unwrap();
 
             // check if refresh is set, if not use a default of 30 minutes
             let refresh = refresh.unwrap_or(30 * 60);
@@ -455,7 +445,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Await all of the requests and ensure they all succeed
             futures::future::join_all(requests).await;
 
-            // println!("Found {} providers for share {}.", providers.len(), key);
+            debug!("Found {} providers for share {}.", providers.len(), key);
             print!(
                 "🔄 Refreshed {} shares for key: {:?}",
                 providers.len(),

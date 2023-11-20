@@ -1,13 +1,13 @@
 use crate::{
     client::Client,
     protocol::Response,
-    repository::{ShareEntry, ShareEntryDaoTrait},
+    repository::{ShareEntry, ShareEntryDaoTrait, SledShareEntryDao, HashMapShareEntryDao},
     sss::{generate_refresh_key, refresh_share, Polynomial},
 };
 use futures::prelude::*;
 use libp2p::request_response::ResponseChannel;
 use libp2p::PeerId;
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, collections::HashMap};
 use tokio::time::Interval;
 use tracing::{debug, error};
 
@@ -147,6 +147,22 @@ pub async fn execute_get_share(
     println!("💡 Sent share for key: {:?}.", key);
 
     Ok(())
+}
+
+pub fn dao(db_path: Option<String>) -> Result<Arc<Mutex<Box<dyn ShareEntryDaoTrait>>>, Box<dyn std::error::Error>> {
+    // check if the db_path is set, if so use sled, otherwise use HashMap
+    let dao: Arc<Mutex<Box<dyn ShareEntryDaoTrait>>> = if db_path.is_some() {
+        debug!("Using Sled DB");
+        Arc::new(Mutex::new(Box::new(SledShareEntryDao::new(
+            &db_path.unwrap(),
+        )?)))
+    } else {
+        debug!("Using HashMap DB");
+        Arc::new(Mutex::new(Box::new(HashMapShareEntryDao {
+            map: Mutex::new(HashMap::new()),
+        })))
+    };
+    Ok(dao)
 }
 
 pub async fn refresh_loop(
