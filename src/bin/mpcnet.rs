@@ -8,12 +8,11 @@ use mpcnet::network;
 use mpcnet::provider::{
     dao, execute_get_share, execute_refresh_share, execute_register_share, refresh_loop,
 };
-use mpcnet::repository::{HashMapShareEntryDao, ShareEntryDaoTrait, SledShareEntryDao};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
 use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use tokio::time::Duration;
 use tokio::{spawn, time};
 use tracing::debug;
