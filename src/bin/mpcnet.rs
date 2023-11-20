@@ -5,7 +5,7 @@ use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
 use mpcnet::repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao};
-use mpcnet::util::{check_share_owner, execute_refresh_share};
+use mpcnet::util::{check_share_owner, execute_refresh_share, refresh_loop};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
@@ -184,88 +184,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             // check if refresh is set, if not use a default of 30 minutes
             let refresh = refresh.unwrap_or(30 * 60);
+            debug!("Using refresh_seconds: {}", refresh);
 
-            //if refresh.is_some() {
-                debug!("Using refresh_seconds: {}", refresh);
-
-                // spawn a refresh task to run every refresh_seconds seconds
-                let dao_clone = Arc::clone(&dao);
-                let mut network_client_clone = network_client.clone();
-                spawn(async move {
-                    let mut interval = time::interval(Duration::from_secs(refresh));
-                    loop {
-                        interval.tick().await;
-                        // Your task here
-                        println!("Starting refresh.");
-
-                        // get all the shares
-                        let shares = dao_clone.lock().unwrap().get_all().unwrap();
-                        debug!("shares: {:?}", shares);
-
-                        // iterate over the shares and refresh them
-                        for (key, share_entry) in shares.iter() {
-                            debug!("key: {:?}", key);
-                            debug!("share_entry: {:?}", share_entry);
-                            let sender = PeerId::from_bytes(&share_entry.sender).unwrap();
-                            debug!("sender: {:?}", sender);
-
-                            let secret_len = share_entry.share.1.len();
-                            // generate a new refresh key
-                            let refresh_key = generate_refresh_key(2, secret_len).unwrap();
-                            debug!("🔑 Refresh Key: {:#?}", refresh_key);
-
-                            // get the providers for the share
-                            let providers = network_client_clone.get_providers(key.clone()).await;
-                            if providers.is_empty() {
-                                error!("Could not find provider for share {key}.");
-                                continue;
-                            }
-
-                            debug!("Found {} providers for share {}.", providers.len(), key);
-
-                            // refresh the share locally
-                            let _ = execute_refresh_share(
-                                key,
-                                &local_peer_id,
-                                &refresh_key,
-                                None,
-                                &dao_clone,
-                                &mut network_client_clone.clone(),
-                            )
-                            .await;
-
-                            // remove local_peer_id from providers
-                            let providers = providers
-                                .into_iter()
-                                .filter(|p| p != &local_peer_id)
-                                .collect::<Vec<_>>();
-
-                            let requests = providers.clone().into_iter().map(|p| {
-                                let k = key.clone();
-                                let ref_key = refresh_key.clone();
-                                let mut network_client = network_client_clone.clone();
-                                debug!("🔄 Refreshing share for key: {:?} to peer {:?}", &k, p);
-                                async move {
-                                    network_client
-                                        .request_refresh_shares(k, ref_key, p, sender)
-                                        .await
-                                }
-                                .boxed()
-                            });
-
-                            // Await all of the requests and ensure they all succeed
-                            futures::future::join_all(requests).await;
-
-                            // println!("Found {} providers for share {}.", providers.len(), key);
-                            debug!(
-                                "🔄 Refreshed {} shares for key: {:?}",
-                                providers.len(),
-                                &key
-                            );
-                        }
-                    }
-                });
-            //};
+            // spawn a refresh task to run every refresh_seconds seconds
+            let dao_clone = Arc::clone(&dao);
+            let mut network_client_clone = network_client.clone();
+            spawn(async move {
+                let mut interval = time::interval(Duration::from_secs(refresh));
+                refresh_loop(&mut interval, dao_clone, &mut network_client_clone, local_peer_id).await;
+            });
 
             loop {
                 match network_events.next().await {
