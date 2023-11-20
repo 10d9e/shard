@@ -62,6 +62,10 @@ Proactive secret refreshing is an extension to SSS, enhancing its security. The 
 ### Example 5-node local network
 Make sure you have the latest version of Rust installed. To build the node, open your terminal and navigate to the project directory where 'shard' is located, and then run the following command:
 
+**0. Install rust**
+
+Make sure that you have 🦀 [rust](https://www.rust-lang.org/tools/install) installed.
+
 **1. Build the Node**
 
 ```bash
