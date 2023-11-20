@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["mpcnet"];
+window.ALL_CRATES = ["shard"];
