@@ -4,7 +4,7 @@
     pub peer: <a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.u8.html">u8</a>&gt;,
     pub sender: <a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.u8.html">u8</a>&gt;,
 }</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Represents a request to refresh share.</p>
-<p>This struct is used when a client requests to refresh the existing shares, 
+<p>This struct is used when a client requests to refresh the existing shares,
 typically to enhance their security.</p>
 <h2 id="fields-1"><a href="#fields-1">Fields</a></h2>
 <ul>
@@ -19,7 +19,7 @@ typically to enhance their security.</p>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>mpcnet::sss::Polynomial;
 <span class="kw">use </span>mpcnet::protocol::RefreshShareRequest;
 <span class="kw">use </span>gf256::gf256;
- 
+
 <span class="kw">let </span>request = RefreshShareRequest {
     key: <span class="string">&quot;share_key&quot;</span>.to_string(),
     refresh_key: <span class="macro">vec!</span>[Polynomial::new(<span class="number">2</span>, gf256::new(<span class="number">5</span>))],

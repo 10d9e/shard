@@ -524,7 +524,6 @@
 <a href="#524" id="524">524</a>
 <a href="#525" id="525">525</a>
 <a href="#526" id="526">526</a>
-<a href="#527" id="527">527</a>
 </pre></div><pre class="rust"><code><span class="kw">extern crate </span>rand;
 
 <span class="kw">use </span>core::fmt;
@@ -548,7 +547,6 @@
 }
 
 <span class="kw">impl </span>Polynomial {
-    
     <span class="doccomment">/// Constructs a new polynomial of a given degree with random coefficients,
     /// where the constant term is the provided secret.
     ///
@@ -657,7 +655,7 @@
 /// # Examples
 /// ```rust
 /// use mpcnet::sss::split_secret;
-/// 
+///
 /// let secret = b&quot;hello world&quot;;
 /// let threshold = 3;
 /// let total_shares = 5;

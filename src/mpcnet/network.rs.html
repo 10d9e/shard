@@ -166,6 +166,8 @@
 <a href="#166" id="166">166</a>
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::client::Client;
 <span class="kw">use </span><span class="kw">crate</span>::event::{Event, EventLoop};
 <span class="kw">use </span><span class="kw">crate</span>::protocol::{Request, Response};
@@ -175,6 +177,7 @@
 
 <span class="kw">use </span>libp2p::gossipsub::IdentTopic;
 <span class="kw">use </span>libp2p::request_response::ProtocolSupport;
+<span class="kw">use </span>libp2p::PeerId;
 <span class="kw">use </span>libp2p::{
     gossipsub, identify, identity, kad, noise, request_response, swarm::NetworkBehaviour, tcp,
     yamux, StreamProtocol,
@@ -245,7 +248,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>new(
     secret_key_seed: <span class="prelude-ty">Option</span>&lt;u8&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(Client, <span class="kw">impl </span>Stream&lt;Item = Event&gt;, EventLoop), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;(Client, <span class="kw">impl </span>Stream&lt;Item = Event&gt;, EventLoop, PeerId), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="comment">// Create a public/private key pair, either random or based on a seed.
     </span><span class="kw">let </span>id_keys = <span class="kw">match </span>secret_key_seed {
         <span class="prelude-val">Some</span>(seed) =&gt; {
@@ -332,6 +335,7 @@
         },
         event_receiver,
         EventLoop::new(swarm, command_receiver, event_sender),
+        peer_id,
     ))
 }
 </code></pre></div></section></main></body></html>

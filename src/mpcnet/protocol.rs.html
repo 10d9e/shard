@@ -341,9 +341,10 @@
 <a href="#341" id="341">341</a>
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::sss::Polynomial;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-
 
 <span class="doccomment">/// Represents a request in a simple share exchange protocol.
 ///
@@ -364,7 +365,7 @@
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::{GetShareRequest, Request};
-/// 
+///
 /// let request = Request::GetShare(GetShareRequest {
 ///     key: &quot;share_key&quot;.to_string(),
 ///     peer: vec![1, 2, 3],
@@ -396,7 +397,7 @@
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::{GetShareResponse, Response};
-/// 
+///
 /// let response = Response::GetShare(GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
 ///     success: true,
@@ -427,7 +428,7 @@
 /// use libp2p::PeerId;
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::GetShareRequest;
-/// 
+///
 /// let request = GetShareRequest {
 ///     key: &quot;share_key&quot;.to_string(),
 ///     peer: vec![1, 2, 3],
@@ -456,7 +457,7 @@
 ///
 /// ```rust
 /// use mpcnet::protocol::GetShareResponse;
-/// 
+///
 /// let response = GetShareResponse {
 ///     share: (1, vec![7, 8, 9]),
 ///     success: true,
@@ -486,7 +487,7 @@
 /// ```rust
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::RegisterShareRequest;
-/// 
+///
 /// let request = RegisterShareRequest {
 ///     key: &quot;share_key&quot;.to_string(),
 ///     share: (1, vec![1, 2, 3]),
@@ -500,6 +501,7 @@
     <span class="kw">pub </span>share: (u8, Vec&lt;u8&gt;),
     <span class="kw">pub </span>peer: Vec&lt;u8&gt;,
     <span class="kw">pub </span>sender: Vec&lt;u8&gt;,
+    <span class="kw">pub </span>threshold: u64,
 }
 
 <span class="doccomment">/// Represents a response to a `RegisterShare` request.
@@ -516,7 +518,7 @@
 ///
 /// ```rust
 /// use mpcnet::protocol::RegisterShareResponse;
-/// 
+///
 /// let response = RegisterShareResponse {
 ///     success: true,
 /// };
@@ -528,7 +530,7 @@
 
 <span class="doccomment">/// Represents a request to refresh share.
 ///
-/// This struct is used when a client requests to refresh the existing shares, 
+/// This struct is used when a client requests to refresh the existing shares,
 /// typically to enhance their security.
 ///
 /// # Fields
@@ -546,7 +548,7 @@
 /// use mpcnet::sss::Polynomial;
 /// use mpcnet::protocol::RefreshShareRequest;
 /// use gf256::gf256;
-/// 
+///
 /// let request = RefreshShareRequest {
 ///     key: &quot;share_key&quot;.to_string(),
 ///     refresh_key: vec![Polynomial::new(2, gf256::new(5))],
@@ -576,7 +578,7 @@
 ///
 /// ```rust
 /// use mpcnet::protocol::RefreshShareResponse;
-/// 
+///
 /// let response = RefreshShareResponse {
 ///     success: true,
 /// };
@@ -638,6 +640,7 @@
             key: <span class="string">&quot;unique_id&quot;</span>.to_string(),
             peer: PeerId::random().into(),
             sender: PeerId::random().into(),
+            threshold: <span class="number">2</span>,
         };
         <span class="macro">assert_test!</span>(request);
     }
@@ -662,6 +665,7 @@
             key: <span class="string">&quot;unique_id&quot;</span>.to_string(),
             peer: PeerId::random().into(),
             sender: PeerId::random().into(),
+            threshold: <span class="number">2</span>,
         });
         <span class="macro">assert_test!</span>(register_share_req);
     }

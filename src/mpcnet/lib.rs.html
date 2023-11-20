@@ -121,6 +121,13 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! # Shamir Secret Sharing with Proactive Share Refresh
 //!
 //! This library implements a network that supoorts Shamir&#39;s Secret Sharing (SSS) and Proactive Share Refreshing mechanisms.
@@ -167,7 +174,7 @@
 //! ```rust
 //! use mpcnet::sss::Polynomial;
 //! use gf256::gf256;
-//! 
+//!
 //! let secret = gf256::new(123); // Your secret
 //! let degree = 2; // Degree of the polynomial (threshold - 1)
 //! let poly = Polynomial::new(degree, secret); // Create a polynomial with the secret as the constant term
@@ -210,37 +217,45 @@
 //!
 //! [More detailed documentation and examples are provided in each module.]
 
-/// The `client` module defines the network client functionalities, enabling interactions with the 
-/// network, such as sending and receiving messages, handling requests, and other peer-to-peer 
+/// The `client` module defines the network client functionalities, enabling interactions with the
+/// network, such as sending and receiving messages, handling requests, and other peer-to-peer
 /// communication features.
 </span><span class="kw">pub mod </span>client;
 
-<span class="doccomment">/// The `command` module contains definitions of various commands used in network operations. These 
-/// commands represent different actions that can be performed in the network, such as dialing other 
+<span class="doccomment">/// The `command` module contains definitions of various commands used in network operations. These
+/// commands represent different actions that can be performed in the network, such as dialing other
 /// peers, starting to listen for connections, and managing secret shares.
 </span><span class="kw">pub mod </span>command;
 
-<span class="doccomment">/// The `event` module defines the different types of events that can occur in the network, such as 
-/// inbound requests or updates in the network state. This module helps in handling asynchronous 
+<span class="doccomment">/// The `event` module defines the different types of events that can occur in the network, such as
+/// inbound requests or updates in the network state. This module helps in handling asynchronous
 /// network events in a structured manner.
 </span><span class="kw">pub mod </span>event;
 
-<span class="doccomment">/// The `network` module implements the necessary network behaviors and utilities. It encapsulates 
-/// the logic for network interactions, including setting up the network, handling peer discovery, 
+<span class="doccomment">/// The `network` module implements the necessary network behaviors and utilities. It encapsulates
+/// the logic for network interactions, including setting up the network, handling peer discovery,
 /// and managing communication protocols.
 </span><span class="kw">pub mod </span>network;
 
-<span class="doccomment">/// The `protocol` module defines the communication protocols used in the network. It includes the 
-/// specifications for various request and response formats, ensuring standardized communication 
+<span class="doccomment">/// The `protocol` module defines the communication protocols used in the network. It includes the
+/// specifications for various request and response formats, ensuring standardized communication
 /// across different network nodes.
 </span><span class="kw">pub mod </span>protocol;
 
-<span class="doccomment">/// The `repository` module manages data storage and retrieval. It is responsible for persisting 
+<span class="doccomment">/// The `repository` module manages data storage and retrieval. It is responsible for persisting
 /// important data, like secret shares, and provides interfaces for accessing and updating this data.
 </span><span class="kw">pub mod </span>repository;
 
-<span class="doccomment">/// The `sss` (Shamir&#39;s Secret Sharing) module is a crucial component of the library. It implements 
-/// the Shamir&#39;s Secret Sharing algorithm and proactive secret sharing. This module provides 
-/// functionalities to split secrets into shares, distribute them, and proactively refresh these 
+<span class="doccomment">/// The `sss` (Shamir&#39;s Secret Sharing) module is a crucial component of the library. It implements
+/// the Shamir&#39;s Secret Sharing algorithm and proactive secret sharing. This module provides
+/// functionalities to split secrets into shares, distribute them, and proactively refresh these
 /// shares to enhance security.
-</span><span class="kw">pub mod </span>sss;</code></pre></div></section></main></body></html>
+</span><span class="kw">pub mod </span>sss;
+
+<span class="doccomment">/// The `provider` module defines the `Provider` trait, which is used to implement different
+/// providers for the network. A provider is responsible for managing the network state, including
+/// the secret shares and the peer list.
+</span><span class="kw">pub mod </span>provider;
+
+<span class="kw">pub mod </span>constants;
+</code></pre></div></section></main></body></html>

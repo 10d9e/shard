@@ -294,6 +294,9 @@
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
 <a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>futures::channel::oneshot;
 <span class="kw">use </span>libp2p::request_response::ResponseChannel;
 <span class="kw">use </span>libp2p::{core::Multiaddr, multiaddr::Protocol, PeerId};
@@ -375,6 +378,7 @@
         key: String,
         peer: PeerId,
         sender: PeerId,
+        threshold: u64,
         sender_chan: oneshot::Sender&lt;<span class="prelude-ty">Result</span>&lt;bool, Box&lt;<span class="kw">dyn </span>Error + Send&gt;&gt;&gt;,
     },
     RespondRegisterShare {
@@ -518,6 +522,7 @@
             share,
             key,
             peer,
+            threshold,
             sender,
             sender_chan,
         } =&gt; {
@@ -531,6 +536,7 @@
                     Request::RegisterShare(RegisterShareRequest {
                         share,
                         key,
+                        threshold,
                         peer: peer.into(),
                         sender: sender.into(),
                     }),
