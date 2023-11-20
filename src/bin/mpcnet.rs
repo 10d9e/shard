@@ -5,7 +5,7 @@ use libp2p::PeerId;
 use libp2p::{core::Multiaddr, multiaddr::Protocol};
 use mpcnet::network;
 use mpcnet::repository::{HashMapShareEntryDao, ShareEntry, ShareEntryDaoTrait, SledShareEntryDao};
-use mpcnet::util::{check_share_owner, execute_refresh_share, refresh_loop};
+use mpcnet::util::{check_share_owner, execute_refresh_share, refresh_loop, execute_register_share, execute_get_share};
 use rand::seq::IteratorRandom;
 use rand::RngCore;
 use std::collections::HashMap;
@@ -200,62 +200,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     Some(Event::InboundRequest { request, channel }) => {
                         match request {
                             Request::RegisterShare(req) => {
-                                debug!("-- Request: {:#?}.", req);
-                                if let Some(share_entry) = dao.lock().unwrap().get(&req.key)? {
-                                    debug!("Retrieved Entry: {:?}", share_entry);
-                                    let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                    debug!("-- Sender: {:#?}.", sender);
-
-                                    // check that the peer requesting the share is the owner
-                                    if !check_share_owner(&share_entry, &sender) {
-                                        println!("⚠️ Share exists, not owned by sender {:?}, actual owner: {:?}", sender, share_entry.sender);
-                                        network_client.respond_register_share(false, channel).await;
-                                        continue;
-                                    }
-                                }
-
-                                network_client.start_providing(req.key.clone()).await;
-                                debug!(
-                                    "-- Sender: {:#?}.",
-                                    PeerId::from_bytes(&req.sender).unwrap()
-                                );
-                                dao.lock().unwrap().insert(
-                                    &req.key.clone(),
-                                    &ShareEntry {
-                                        share: req.share,
-                                        sender: req.sender,
-                                    },
-                                )?;
-                                network_client.respond_register_share(true, channel).await;
-                                println!("🚀 Registered share for key: {:?}.", req.key);
+                                let sender = PeerId::from_bytes(&req.sender).unwrap();
+                                execute_register_share(&req.key, &sender, req.share, channel, &dao, &mut network_client).await?;
                             }
                             Request::GetShare(req) => {
-                                debug!("-- Request: {:#?}.", req);
-                                let share_entry = dao
-                                    .lock()
-                                    .unwrap()
-                                    .get(&req.key)
-                                    .unwrap()
-                                    .ok_or("Share not found")?;
-
                                 let sender = PeerId::from_bytes(&req.sender).unwrap();
-                                debug!("-- Sender: {:#?}.", sender);
-
-                                // check that the peer requesting the share is the owner
-                                if !check_share_owner(&share_entry, &sender) {
-                                    println!(
-                                        "⚠️ Share not owned by sender {:?}, actual owner: {:?}",
-                                        sender, share_entry.sender
-                                    );
-                                    network_client
-                                        .respond_share((0u8, vec![]), false, channel)
-                                        .await;
-                                    continue;
-                                }
-                                network_client
-                                    .respond_share(share_entry.share.clone(), true, channel)
-                                    .await;
-                                println!("💡 Sent share for key: {:?}.", req.key);
+                                execute_get_share(&req.key, &sender, channel, &dao, &mut network_client).await?;
                             }
                             Request::RefreshShare(req) => {
                                 let sender = PeerId::from_bytes(&req.sender).unwrap();
