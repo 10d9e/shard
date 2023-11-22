@@ -13,4 +13,4 @@ WORKDIR /app
 COPY --from=builder /app/target/release/shard /usr/local/bin/
 
 # Command to run the application
-CMD ["shard"]
+CMD ["shard", "provide"]

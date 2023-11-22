@@ -32,7 +32,7 @@ use shard::sss::split_secret;
 #[command(version = crate_version!())]
 #[command(
     about = "SHARD (SHARD Holds And Refreshes (Discrete) Data))",
-    long_about = "SHARD (SHARD Holds And Refreshes (Discrete) Data) threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default. Default configuration is located at ~/.shard/conf.toml."
+    long_about = "SHARD (SHARD Holds And Refreshes (Discrete) Data) threshold network allows users to split secrets into shares, distribute them to share providers, and recombine them at a threshold to rebuild the secret. A node will provide shares to the shard, and refresh them automatically at a specified interval. It works by generating a new refresh key and then updating the shares across the network. The provider node persists all shares to a database, and will use the database on restart. Note that the database is in-memory by default, but can be set to a file-based database using the --db-path flag. Shares can only be retrieved or re-registered by the same client that registers the share with the network, identified by the client's peer ID, which is derived from their public key. Shares are automatically refreshed without changing the secret itself between share providers, enhancing the overall security of the network over time. The refresh interval is set using the --refresh-interval flag, and is set to 30 minutes by default."
 )]
 enum CliArgument {
     /// (Provider) Run a share provider node that provides shares to shard users, and refresh them automatically at a specified interval.
@@ -111,8 +111,8 @@ enum CliArgument {
 #[clap(name = "shard Threshold Network")]
 struct Opt {
     /// Fixed value to generate deterministic peer ID.
-    #[clap(long, short)]
-    secret_key_seed: Option<u8>,
+    //#[clap(long, short)]
+    //secret_key_seed: Option<u8>,
 
     /// Address of a peer to connect to.
     #[clap(long, short)]
@@ -125,25 +125,35 @@ struct Opt {
     /// Subcommand to run.
     #[clap(subcommand)]
     argument: CliArgument,
+
+    /// Path to config directory
+    #[clap(long, short, default_value = ".shard")]
+    config_path: String,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let config = ShardConfig::new()?;    
-    let sender = get_sender();
-    debug!("sender ID: {}", sender);
-
     let _ = tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .try_init();
 
     let opt = Opt::parse();
+    let config = ShardConfig::new(&opt.config_path)?;
+    // println!("Peer ID: {}", peer_id);
+
+    let sender = config.key().public().to_peer_id();
+    debug!("sender ID: {}", sender);
 
     let (mut network_client, mut network_events, network_event_loop, local_peer_id) =
-        network::new(opt.secret_key_seed).await?;
+        network::new(&config).await?;
 
     // Spawn the network task for it to run in the background.
-    spawn(network_event_loop.run());
+    // if opt.argument.Provider then set display_listen_addrs to true
+    let display_listen_addrs = match opt.argument {
+        CliArgument::Provide { .. } => true,
+        _ => false,
+    };
+    spawn(network_event_loop.run(display_listen_addrs));
 
     // In case a listen address was provided use it, otherwise listen on any
     // address.
@@ -158,19 +168,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .expect("Listening not to fail."),
     };
 
-    if let Some(addr) = config.bootstrapper {
-        let Some(Protocol::P2p(peer_id)) = addr.iter().last() else {
+    for bootstrapper in config.bootstrappers {
+        let Some(Protocol::P2p(peer_id)) = bootstrapper.iter().last() else {
             return Err("Expect peer multiaddr to contain peer ID.".into());
         };
-
-        // if the peer is the same as the local peer, don't dial
-        if peer_id != local_peer_id {
-            debug!("👢 Bootstrapping to peer at {}.", addr);
-            network_client
-                .dial(peer_id, addr)
-                .await
-                .expect("Dial to succeed");
-        }
+        println!("👢 Bootstrapping to peer at {}.", bootstrapper);
+        network_client
+            .dial(peer_id, bootstrapper)
+            .await
+            .expect("Dial to succeed");
     }
 
     // In case the user provided an address of a peer on the CLI, dial it.
@@ -480,11 +486,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/* 
 fn get_sender() -> PeerId {
     // create a deterministic peer id from a fixed value
     let mut bytes = [0u8; 32];
     bytes[0] = 42;
-    let id_keys = libp2p::identity::Keypair::ed25519_from_bytes(bytes).unwrap();
+    let id_keys: libp2p::identity::Keypair = libp2p::identity::Keypair::ed25519_from_bytes(bytes).unwrap();
     //let id_keys = libp2p::identity::Keypair::generate_ed25519();
     id_keys.public().to_peer_id()
 }
+*/

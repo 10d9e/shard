@@ -1,10 +1,12 @@
 use crate::client::Client;
+use crate::config::ShardConfig;
 use crate::event::{Event, EventLoop};
 use crate::protocol::{Request, Response};
 
 use futures::channel::mpsc;
 use futures::prelude::*;
 
+use gf256::p;
 use libp2p::gossipsub::IdentTopic;
 use libp2p::request_response::ProtocolSupport;
 use libp2p::PeerId;
@@ -77,9 +79,10 @@ pub struct Behaviour {
 /// let (client, event_stream, event_loop) = new(Some(42)).await?;
 /// ```
 pub async fn new(
-    secret_key_seed: Option<u8>,
+    shard_config: &ShardConfig,
 ) -> Result<(Client, impl Stream<Item = Event>, EventLoop, PeerId), Box<dyn Error>> {
     // Create a public/private key pair, either random or based on a seed.
+    /*
     let id_keys = match secret_key_seed {
         Some(seed) => {
             let mut bytes = [0u8; 32];
@@ -88,7 +91,10 @@ pub async fn new(
         }
         None => identity::Keypair::generate_ed25519(),
     };
-    let peer_id = id_keys.public().to_peer_id();
+    */
+    //let peer_id = id_keys.public().to_peer_id();
+    let id_keys = shard_config.key();
+    let peer_id = shard_config.peer_id();
     debug!("Peer ID: {}", peer_id);
 
     let mut swarm = libp2p::SwarmBuilder::with_existing_identity(id_keys)
@@ -145,7 +151,7 @@ pub async fn new(
             })
         })?
         .build();
-
+    
     swarm
         .behaviour_mut()
         .kademlia
@@ -158,6 +164,11 @@ pub async fn new(
 
     let (command_sender, command_receiver) = mpsc::channel(0);
     let (event_sender, event_receiver) = mpsc::channel(0);
+
+    // print out info about the listening addresses
+    for listener in swarm.listeners() {
+        println!("Listening on {:?}", listener);
+    }
 
     Ok((
         Client {

@@ -129,10 +129,10 @@ impl EventLoop {
     /// ```ignore
     /// event_loop.run().await;
     /// ```
-    pub async fn run(mut self) {
+    pub async fn run(mut self, display_listen_addrs: bool) {
         loop {
             futures::select! {
-                event = self.swarm.next() => self.handle_event(event.expect("Swarm stream to be infinite.")).await  ,
+                event = self.swarm.next() => self.handle_event(event.expect("Swarm stream to be infinite."), display_listen_addrs).await  ,
                 command = self.command_receiver.next() => match command {
                     Some(c) => self.handle_command(c).await,
                     // Command channel closed, thus shutting down the network event loop.
@@ -147,7 +147,7 @@ impl EventLoop {
     /// # Arguments
     ///
     /// * `event` - The event to handle.
-    async fn handle_event(&mut self, event: SwarmEvent<BehaviourEvent>) {
+    async fn handle_event(&mut self, event: SwarmEvent<BehaviourEvent>, display_listen_addrs: bool) {
         match event {
             SwarmEvent::Behaviour(BehaviourEvent::Kademlia(
                 kad::Event::OutboundQueryProgressed {
@@ -313,11 +313,14 @@ impl EventLoop {
             )) => {}
 
             SwarmEvent::NewListenAddr { address, .. } => {
-                let local_peer_id = *self.swarm.local_peer_id();
-                debug!(
-                    "Local node is listening on {:?}",
-                    address.with(Protocol::P2p(local_peer_id))
-                );
+                if display_listen_addrs {
+                    let local_peer_id = *self.swarm.local_peer_id();
+                    println!(
+                        "Local node is listening on {:?}",
+                        address.with(Protocol::P2p(local_peer_id))
+                    );
+                }
+                
             }
             SwarmEvent::IncomingConnection { .. } => {}
             SwarmEvent::ConnectionEstablished {
