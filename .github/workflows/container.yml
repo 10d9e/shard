@@ -17,9 +17,19 @@ jobs:
     - name: Login to GHCR
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
+    - name: Install tomlq
+      run: |
+        curl -sSL https://github.com/pappasam/tomlq/releases/download/v1.2.0/tomlq_linux_amd64 -o tomlq
+        chmod +x tomlq
+        sudo mv tomlq /usr/local/bin/
+      if: runner.os == 'Linux'
+    
     - name: Get Version from Cargo.toml
       id: version
-      run: echo ::set-output name=version::$(cat docker/Cargo.toml | grep -Po '(?<=version = ")[^"]*?' | head -n 1)
+      run: |
+        version=$(tomlq -r .package.version docker/Cargo.toml)
+        echo "::set-output name=version::$version"
+      shell: bash
         
     - name: Build and Push Docker Image
       run: |
