@@ -12,5 +12,15 @@ FROM debian:bookworm-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/shard /usr/local/bin/
 
-# Command to run the application
-CMD ["shard", "provide"]
+# Check if KEY environment variable is set and create ~/.shard/key file
+RUN if [ -n "$KEY" ]; then \
+    mkdir -p ~/.shard && echo "$KEY" > ~/.shard/key; \
+  fi
+
+# Check if BOOTSTRAPPER environment variable is set and create ~/.shard/conf.toml file
+RUN if [ -n "$BOOTSTRAPPER" ]; then \
+    mkdir -p ~/.shard && echo "bootstrappers = [ \"$BOOTSTRAPPER\" ]" > ~/.shard/conf.toml; \
+  fi
+  
+# Check if LISTEN_ADDR environment variable is set, and conditionally set CMD
+CMD [ "sh", "-c", "if [ -n \"$LISTEN_ADDR\" ]; then exec shard provide --listen-address=$LISTEN_ADDR; else exec shard provide; fi" ]

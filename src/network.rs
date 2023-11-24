@@ -6,12 +6,11 @@ use crate::protocol::{Request, Response};
 use futures::channel::mpsc;
 use futures::prelude::*;
 
-use gf256::p;
 use libp2p::gossipsub::IdentTopic;
 use libp2p::request_response::ProtocolSupport;
 use libp2p::PeerId;
 use libp2p::{
-    gossipsub, identify, identity, kad, noise, request_response, swarm::NetworkBehaviour, tcp,
+    gossipsub, identify, kad, noise, request_response, swarm::NetworkBehaviour, tcp,
     yamux, StreamProtocol,
 };
 use std::collections::hash_map::DefaultHasher;

@@ -17,14 +17,25 @@ pub struct ShardConfig {
 impl ShardConfig {
     pub fn new(path: &str) -> Result<Self, ConfigError> {
         let config_path = PathBuf::from(path);
+
+        // create the config directory if it doesn't exist as a one-liner
         if !config_path.exists() {
             fs::create_dir_all(config_path.clone()).unwrap();
+        }
+
+        // only create a key if one doesn't exist
+        if !config_path.join("key").exists() {
             let mut key_file = File::create(config_path.join("key")).unwrap();
             let rand_keys = libp2p::identity::Keypair::generate_ed25519();
             let encoded_priv = rand_keys.to_protobuf_encoding().unwrap();
             key_file.write_all(hex::encode(encoded_priv).as_bytes()).unwrap();
+        }
+
+        // if the conf.toml file doesn't exist, create it
+        let config_path = config_path.canonicalize().unwrap();
+        if !config_path.join("conf.toml").exists() {
             let shard_config = ShardConfig{
-                config_path: config_path.canonicalize().unwrap(),
+                config_path: config_path.clone(),
                 bootstrappers: vec![],
             };
             let toml = toml::to_string_pretty(&shard_config).map_err(|err| ConfigError::Foreign(Box::new(err)))?;
