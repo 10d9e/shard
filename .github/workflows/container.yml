@@ -19,7 +19,7 @@ jobs:
 
     - name: Get Version from Cargo.toml
       id: version
-      run: echo ::set-output name=version::$(cat docker/Cargo.toml | grep -Po '(?<=version = ")[^"]*')
+      run: echo ::set-output name=version::$(cat Cargo.toml | grep -Po '(?<=version = ")[^"]*')
         
     - name: Build and Push Docker Image
       run: |
