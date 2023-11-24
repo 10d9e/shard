@@ -20,11 +20,6 @@ jobs:
     - name: Get Version from Cargo.toml
       id: version
       run: echo ::set-output name=version::$(cat docker/Cargo.toml | grep -Po '(?<=version = ")[^"]*')
-
-    - name: Build and Push Docker Image
-      run: |
-        docker build -t ghcr.io/${{ github.repository_owner }}/my-image:${{ steps.version.outputs.version }} -f docker/Dockerfile .
-        docker push ghcr.io/${{ github.repository_owner }}/my-image:${{ steps.version.outputs.version }}
         
     - name: Build and Push Docker Image
       run: |
