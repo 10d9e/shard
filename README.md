@@ -225,7 +225,7 @@ docker exec -it client shard refresh --key test --threshold 7 --size 10
 docker exec -it client shard combine --key test --verbose
 ```
 
-or from within the client container:
+#### Interactively within the `client` container
 
 ```bash
 docker exec -it client /bin/bash
@@ -237,14 +237,6 @@ root@1facf6c6df16:/app# shard refresh --key test --threshold 7 --size 10
 🔄 Refreshed 10 shares for key: "test"
 root@1facf6c6df16:/app# shard combine --key test
 🔑 secret: "butterbeer"
-```
-
-#### Interactively within the `client` container
-
-```bash
-❯ docker exec -it client /bin/bash 
-root@71b4dce52922:/app# shard --help
-SHARD threshold network allows users to split ...
 ```
 
 Observe the node participants log statements with each command:
