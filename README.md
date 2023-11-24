@@ -214,6 +214,12 @@ A docker-based testnet is provided that includes 10 nodes and a client container
 docker-compose up --build
 ```
 
+or if you don't want to do a full rebuild of the binaries, you can use the prebuilt images hosted on the project registry:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/jlogelin/shard/main/docker-compose-ghcr.yml | docker-compose -f - up -d
+```
+
 ### 2. Execute the commands within the testnet
 
 #### From the host operating system
