@@ -80,7 +80,7 @@ The bootstrapper node is essential for the network to operate. It acts as the in
 ./target/release/shard --listen-address /ip4/127.0.0.1/tcp/40837 --secret-key-seed 1 provide --refresh-interval 10
 ```
 
-This command starts 'shard' as a bootstrapper node, listening on address '/ip4/127.0.0.1/tcp/40837' and using the secret key seed '1'. ~Note: Here we are overriding the default `--refresh-interval` to run every 10 seconds, from the default 30 minutes, to demonstrate provider refreshing~
+This command starts 'shard' as a bootstrapper node, listening on address '/ip4/127.0.0.1/tcp/40837' and using the secret key seed '1'. _Note: Here we are overriding the default `--refresh-interval` to run every 10 seconds, from the default 30 minutes, to demonstrate provider refreshing_
 
 **3. Start Provider Nodes**
 
@@ -158,7 +158,7 @@ This command retrieves information about nodes hosting shares for the specified 
 
 **6. Refresh Shares**
 
-The refresh command can be run as many times as you want, and it doesn't require client interaction. ~Note: that this is an interactive version of refreshing. Each node performs it's own refresh operations that propagates through the network automatically~ Use the following command to refresh shares:
+The refresh command can be run as many times as you want, and it doesn't require client interaction. _Note: that this is an interactive version of refreshing. Each node performs it's own refresh operations that propagates through the network automatically_ Use the following command to refresh shares:
 
 ```bash
 ❯ ./target/release/shard refresh --key test --threshold 3 --size 10
