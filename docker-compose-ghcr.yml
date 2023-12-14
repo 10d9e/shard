@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   bootstrapper:
-    image: ghcr.io/jlogelin/shard:latest
+    image: ghcr.io/10d9e/shard:latest
     command: shard --listen-address /ip4/10.6.0.5/tcp/40837 --secret-key-seed 1 provide --db-path .db --refresh-interval 10
     ports:
       - "40837:40837"
@@ -11,7 +11,7 @@ services:
         ipv4_address: 10.6.0.5
 
   provider:
-    image: ghcr.io/jlogelin/shard:latest
+    image: ghcr.io/10d9e/shard:latest
     command: >
       /bin/sh -c "
       mkdir -p .shard &&
@@ -26,7 +26,7 @@ services:
 
   client:
     container_name: client
-    image: ghcr.io/jlogelin/shard:latest
+    image: ghcr.io/10d9e/shard:latest
     command:  >
       /bin/sh -c "
       mkdir -p .shard &&

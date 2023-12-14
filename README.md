@@ -1,10 +1,10 @@
 # SHARD - SHARD Holds And Refreshes (Discrete) Data 🔑
 
-[![build-badge](https://github.com/jlogelin/shard/actions/workflows/build.yml/badge.svg)](https://nightly.link/jlogelin/shard/workflows/build/main/binaries.zip)
-[![document-badge](https://github.com/jlogelin/shard/actions/workflows/doc.yml/badge.svg)](https://jlogelin.github.io/shard)
+[![build-badge](https://github.com/10d9e/shard/actions/workflows/build.yml/badge.svg)](https://nightly.link/10d9e/10d9e/workflows/build/main/binaries.zip)
+[![document-badge](https://github.com/10d9e/shard/actions/workflows/doc.yml/badge.svg)](https://10d9e.github.io/shard)
 [![license-badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
-SHARD is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes interactively refresh these shares to harden the overall security of the network. It has a robust p2p network [design](https://github.com/jlogelin/shard#design), checkout the testnet examples [here](https://github.com/jlogelin/shard#example-5-node-local-network) and [here](https://github.com/jlogelin/shard#example-10-node-docker-network).
+SHARD is a decentralized network node built to facilitate a secure and robust threshold network using Shamir's Secret Sharing (SSS) and proactive secret refreshing. It allows users to split secrets into shares, distribute them across the network, combine them to reconstruct the original secret safely. Nodes interactively refresh these shares to harden the overall security of the network. It has a robust p2p network [design](https://github.com/10d9e/shard#design), checkout the testnet examples [here](https://github.com/10d9e/shard#example-5-node-local-network) and [here](https://github.com/10d9e/shard#example-10-node-docker-network).
 
 ## Getting Started
 
@@ -217,7 +217,7 @@ docker-compose up --build
 or if you don't want to do a full rebuild of the binaries, you can use the prebuilt images hosted on the project registry:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/jlogelin/shard/main/docker-compose-ghcr.yml | docker-compose -f - up -d
+curl -sSL https://raw.githubusercontent.com/10d9e/shard/main/docker-compose-ghcr.yml | docker-compose -f - up -d
 ```
 
 ### 2. Execute the commands within the testnet
