@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"shard":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.0/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;Config&gt; for <a class=\"struct\" href=\"shard/config/struct.ShardConfig.html\" title=\"struct shard::config::ShardConfig\">ShardConfig</a>"]]
+"shard":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;Config&gt; for <a class=\"struct\" href=\"shard/config/struct.ShardConfig.html\" title=\"struct shard::config::ShardConfig\">ShardConfig</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
