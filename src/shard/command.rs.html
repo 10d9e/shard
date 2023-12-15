@@ -297,6 +297,12 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>futures::channel::oneshot;
 <span class="kw">use </span>libp2p::request_response::ResponseChannel;
 <span class="kw">use </span>libp2p::{core::Multiaddr, multiaddr::Protocol, PeerId};
@@ -459,6 +465,9 @@
             eventloop.pending_start_providing.insert(query_id, sender);
         }
         Command::GetProviders { key, sender } =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = eventloop.swarm.behaviour_mut().kademlia.bootstrap() {
+                <span class="macro">println!</span>(<span class="string">&quot;Failed to run Kademlia bootstrap: {e:?}&quot;</span>);
+            }
             <span class="kw">let </span>query_id = eventloop
                 .swarm
                 .behaviour_mut()
@@ -467,6 +476,9 @@
             eventloop.pending_get_providers.insert(query_id, sender);
         }
         Command::GetAllProviders { sender } =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = eventloop.swarm.behaviour_mut().kademlia.bootstrap() {
+                <span class="macro">println!</span>(<span class="string">&quot;Failed to run Kademlia bootstrap: {e:?}&quot;</span>);
+            }
             <span class="comment">// build a list of all peers in the routing table
             </span><span class="kw">let </span>peers: Vec&lt;PeerId&gt; = eventloop
                 .swarm
