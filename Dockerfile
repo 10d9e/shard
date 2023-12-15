@@ -12,5 +12,8 @@ FROM debian:bookworm-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/shard /usr/local/bin/
 
+# Define an environment variable for the custom command
+ENV COMMAND=
+
 # Command to run the application
-CMD ["shard"]
+CMD ["/bin/sh", "-c", "if [ -z \"$COMMAND\" ]; then shard; else $COMMAND; fi"]

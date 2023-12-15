@@ -193,10 +193,16 @@ impl EventLoop {
                         identify::Info {
                             listen_addrs,
                             protocols,
+                            observed_addr,
                             ..
                         },
                 } = e
                 {
+                    debug!("identify::Event::Received observed_addr: {}", observed_addr);
+
+                    self.swarm.add_external_address(observed_addr);
+                    
+                     // TODO: The following should no longer be necessary after https://github.com/libp2p/rust-libp2p/pull/4371.
                     if protocols.iter().any(|p| *p == kad::PROTOCOL_NAME) {
                         for addr in listen_addrs {
                             self.swarm

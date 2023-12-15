@@ -1,0 +1,26 @@
+# fly.toml app configuration file generated for shard-bootstrapper on 2023-12-14T18:20:57-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "shard-bootstrapper"
+primary_region = "yul"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  COMMAND = "shard --listen-address /ip4/0.0.0.0/tcp/40837 --secret-key-seed 1 provide --db-path .db --refresh-interval 300"
+  RUST_LOG = "info"
+
+[[services]]
+  internal_port = 40837
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = "40837"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024

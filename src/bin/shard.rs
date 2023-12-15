@@ -11,8 +11,7 @@ use std::error::Error;
 use std::sync::Arc;
 use tokio::time::Duration;
 use tokio::{spawn, time};
-use tracing::debug;
-use tracing::error;
+use tracing::{debug, error};
 use tracing_subscriber::EnvFilter;
 
 use shard::constants::DEFAULT_REFRESH_SECONDS;
@@ -364,7 +363,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // check that there are the correct number of providers
             if providers.len() < shares {
                 return Err(format!(
-                    "Not enough providers to accomodate shares. Wait for more providers to join"
+                    "Not enough providers ({}) to accomodate shares. Wait for more providers to join", providers.len()
                 )
                 .into());
             }
@@ -444,7 +443,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             let providers = network_client.get_providers(key.clone()).await;
             if providers.is_empty() {
-                return Err(format!("Could not find provider for share key: {key}.").into());
+                return Err(format!("Could not find providers for share key: {key}.").into());
             }
 
             debug!("Found {} providers for share {}.", providers.len(), key);

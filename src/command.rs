@@ -160,6 +160,9 @@ pub async fn command_handler(eventloop: &mut EventLoop, command: Command) {
             eventloop.pending_start_providing.insert(query_id, sender);
         }
         Command::GetProviders { key, sender } => {
+            if let Err(e) = eventloop.swarm.behaviour_mut().kademlia.bootstrap() {
+                println!("Failed to run Kademlia bootstrap: {e:?}");
+            }
             let query_id = eventloop
                 .swarm
                 .behaviour_mut()
@@ -168,6 +171,9 @@ pub async fn command_handler(eventloop: &mut EventLoop, command: Command) {
             eventloop.pending_get_providers.insert(query_id, sender);
         }
         Command::GetAllProviders { sender } => {
+            if let Err(e) = eventloop.swarm.behaviour_mut().kademlia.bootstrap() {
+                println!("Failed to run Kademlia bootstrap: {e:?}");
+            }
             // build a list of all peers in the routing table
             let peers: Vec<PeerId> = eventloop
                 .swarm

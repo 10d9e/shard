@@ -87,7 +87,7 @@ This command starts 'shard' as a bootstrapper node, listening on address '/ip4/1
 You'll need multiple provider nodes to participate in the network. (To run locally we will just use an in-memory database, however, in a real world scenario, we would use the `db-path` option to define the path for share persistence.) To start a provider node, open multiple terminals (4 in this case) and run the following command in 4 separate terminals:
 
 ```bash
-./target/release/shard --peer provide
+./target/release/shard provide
 ```
 
 Each command starts a provider node, and they all connect to the bootstrapper node specified by the `--peer` argument.

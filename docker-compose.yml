@@ -4,7 +4,7 @@ services:
   bootstrapper:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     command: shard --listen-address /ip4/10.5.0.5/tcp/40837 --secret-key-seed 1 provide --db-path .db --refresh-interval 10
     ports:
       - "40837:40837"
@@ -15,7 +15,7 @@ services:
   provider:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     command: >
       /bin/sh -c "
       mkdir -p .shard &&
@@ -32,7 +32,7 @@ services:
     container_name: client
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     command:  >
       /bin/sh -c "
       mkdir -p .shard &&
