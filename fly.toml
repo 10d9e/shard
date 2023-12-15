@@ -1,26 +1,39 @@
-# fly.toml app configuration file generated for shard-bootstrapper on 2023-12-14T18:20:57-04:00
+# fly.toml app configuration file generated for shard-long-dew-9956 on 2023-12-15T00:40:56-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "shard-bootstrapper"
+app = "shard"
 primary_region = "yul"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
-  COMMAND = "shard --listen-address /ip4/0.0.0.0/tcp/40837 --secret-key-seed 1 provide --db-path .db --refresh-interval 300"
   RUST_LOG = "info"
 
+[processes]
+  boot = "shard --listen-address /ip4/0.0.0.0/tcp/40837 --secret-key-seed 1 provide --db-path .db --refresh-interval 1209600"
+  other = "shard --listen-address /ip4/0.0.0.0/tcp/42961 --peer /ip4/213.188.207.114/tcp/40837/p2p/12D3KooWPjceQrSwdWXPyLLeABRXmuqt69Rg3sBYbU1Nft9HyQ6X provide --db-path .db"
+
 [[services]]
-  internal_port = 40837
   protocol = "tcp"
+  internal_port = 40837
+  processes = ["boot"]
 
   [[services.ports]]
-    port = "40837"
+    port = 40837
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 42961
+  processes = ["other"]
+
+  [[services.ports]]
+    port = 42961
 
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
   memory_mb = 1024
+  processes = ["boot", "other"]

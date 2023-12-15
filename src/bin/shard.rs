@@ -8,6 +8,7 @@ use rand::RngCore;
 use shard::config::ShardConfig;
 use std::collections::HashMap;
 use std::error::Error;
+use std::net::IpAddr;
 use std::sync::Arc;
 use tokio::time::Duration;
 use tokio::{spawn, time};
@@ -121,6 +122,10 @@ struct Opt {
     #[clap(long, short)]
     listen_address: Option<Multiaddr>,
 
+    /// If known, the external address of this node. Will be used to correctly advertise our external address across all transports.
+    #[clap(long, env)]
+    external_address: Option<IpAddr>,
+
     /// Subcommand to run.
     #[clap(subcommand)]
     argument: CliArgument,
@@ -142,7 +147,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         network::new(opt.secret_key_seed).await?;
 
     // Spawn the network task for it to run in the background.
-    spawn(network_event_loop.run());
+    spawn(network_event_loop.run(opt.external_address));
 
     // In case a listen address was provided use it, otherwise listen on any
     // address.
@@ -157,6 +162,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .expect("Listening not to fail."),
     };
 
+    /*
     if let Some(addr) = config.bootstrapper {
         let Some(Protocol::P2p(peer_id)) = addr.iter().last() else {
             return Err("Expect peer multiaddr to contain peer ID.".into());
@@ -171,6 +177,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .expect("Dial to succeed");
         }
     }
+     */
 
     // In case the user provided an address of a peer on the CLI, dial it.
     if let Some(addr) = opt.peer {
@@ -182,6 +189,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .dial(peer_id, addr)
             .await
             .expect("Dial to succeed");
+    } else if let Some(addr) = config.bootstrapper {
+        let Some(Protocol::P2p(peer_id)) = addr.iter().last() else {
+            return Err("Expect peer multiaddr to contain peer ID.".into());
+        };
+
+        // if the peer is the same as the local peer, don't dial
+        if peer_id != local_peer_id {
+            debug!("👢 Bootstrapping to peer at {}.", addr);
+            network_client
+                .dial(peer_id, addr)
+                .await
+                .expect("Dial to succeed");
+        }
     }
 
     debug!("Waiting for network to be ready...");

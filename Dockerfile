@@ -12,6 +12,8 @@ FROM debian:bookworm-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/shard /usr/local/bin/
 
+EXPOSE 40837/tcp
+
 # Define an environment variable for the custom command
 ENV COMMAND=
 

@@ -12,6 +12,7 @@ use libp2p::{
 
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
+use std::net::IpAddr;
 use tracing::debug;
 
 use crate::command::command_handler;
@@ -129,14 +130,14 @@ impl EventLoop {
     /// ```ignore
     /// event_loop.run().await;
     /// ```
-    pub async fn run(mut self) {
+    pub async fn run(mut self, external_address: Option<IpAddr>) {
         loop {
             futures::select! {
-                event = self.swarm.next() => self.handle_event(event.expect("Swarm stream to be infinite.")).await  ,
+                event = self.swarm.next() => self.handle_event(event.expect("Swarm stream to be infinite."), external_address).await,
                 command = self.command_receiver.next() => match command {
                     Some(c) => self.handle_command(c).await,
                     // Command channel closed, thus shutting down the network event loop.
-                    None=>  return,
+                    None => return,
                 },
             }
         }
@@ -147,7 +148,7 @@ impl EventLoop {
     /// # Arguments
     ///
     /// * `event` - The event to handle.
-    async fn handle_event(&mut self, event: SwarmEvent<BehaviourEvent>) {
+    async fn handle_event(&mut self, event: SwarmEvent<BehaviourEvent>, external_address: Option<IpAddr>) {
         match event {
             SwarmEvent::Behaviour(BehaviourEvent::Kademlia(
                 kad::Event::OutboundQueryProgressed {
@@ -319,6 +320,14 @@ impl EventLoop {
             )) => {}
 
             SwarmEvent::NewListenAddr { address, .. } => {
+                if let Some(external_ip) = external_address {
+                    let external_address = address
+                        .replace(0, |_| Some(external_ip.into()))
+                        .expect("address.len > 1 and we always return `Some`");
+
+                    self.swarm.add_external_address(external_address);
+                }
+
                 let local_peer_id = *self.swarm.local_peer_id();
                 debug!(
                     "Local node is listening on {:?}",
