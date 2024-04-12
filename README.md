@@ -8,7 +8,7 @@ SHARD is a decentralized network node built to facilitate a secure and robust th
 
 ## Getting Started
 
-To use shard, you should follow these steps:
+To use shard, follow these steps:
 
 1. **Installation**: Compile and install shard from the source code.
 2. **Running a Node**: Start an shard node using the `provide` command. (provider nodes automatically perform regular shard refreshes)
