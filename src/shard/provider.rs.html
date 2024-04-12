@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/provider.rs`."><title>provider.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../shard/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/provider.rs`."><title>provider.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../shard/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -478,17 +480,17 @@
         .unwrap()
         .get(key)
         .unwrap()
-        .ok_or(<span class="string">&quot;Share not found&quot;</span>)<span class="question-mark">?</span>;
+        .ok_or(<span class="string">"Share not found"</span>)<span class="question-mark">?</span>;
 
     <span class="comment">//let sender = PeerId::from_bytes(&amp;sender).unwrap();
-    </span><span class="macro">debug!</span>(<span class="string">&quot;-- Sender: {:#?}.&quot;</span>, sender);
+    </span><span class="macro">debug!</span>(<span class="string">"-- Sender: {:#?}."</span>, sender);
 
     <span class="comment">// check that the peer requesting the share is the owner
     // only if the channel is not None
     </span><span class="kw">if </span>channel.is_some() {
         <span class="kw">if </span>!check_share_owner(<span class="kw-2">&amp;</span>share_entry, sender) {
             <span class="macro">println!</span>(
-                <span class="string">&quot;⚠️ Share not owned by sender {:?}, actual owner: {:?}&quot;</span>,
+                <span class="string">"⚠️ Share not owned by sender {:?}, actual owner: {:?}"</span>,
                 sender,
                 PeerId::from_bytes(<span class="kw-2">&amp;</span>share_entry.sender).unwrap()
             );
@@ -501,35 +503,35 @@
         }
     }
 
-    <span class="macro">debug!</span>(<span class="string">&quot;-- share before refresh: {:?}&quot;</span>, share_entry.share);
+    <span class="macro">debug!</span>(<span class="string">"-- share before refresh: {:?}"</span>, share_entry.share);
     <span class="kw">let _ </span>= refresh_share(
         (<span class="kw-2">&amp;mut </span>share_entry.share.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>share_entry.share.<span class="number">1</span>),
         refresh_key,
     );
     dao.lock().unwrap().insert(key, <span class="kw-2">&amp;</span>share_entry)<span class="question-mark">?</span>;
-    <span class="macro">debug!</span>(<span class="string">&quot;-- share after refresh:  {:?}&quot;</span>, share_entry.share);
+    <span class="macro">debug!</span>(<span class="string">"-- share after refresh:  {:?}"</span>, share_entry.share);
 
     <span class="kw">let </span>test = dao
         .lock()
         .unwrap()
         .get(<span class="kw-2">&amp;</span>key)
         .unwrap()
-        .ok_or(<span class="string">&quot;Share not found&quot;</span>)<span class="question-mark">?</span>;
-    <span class="macro">debug!</span>(<span class="string">&quot;-- test share from dao: {:?}&quot;</span>, test.share);
+        .ok_or(<span class="string">"Share not found"</span>)<span class="question-mark">?</span>;
+    <span class="macro">debug!</span>(<span class="string">"-- test share from dao: {:?}"</span>, test.share);
 
     <span class="kw">if </span>channel.is_some() {
         network_client
             .respond_refresh_shares(<span class="bool-val">true</span>, channel.unwrap())
             .<span class="kw">await</span>;
     }
-    <span class="macro">println!</span>(<span class="string">&quot;🔄 Refreshed share for key: {:?}&quot;</span>, key);
+    <span class="macro">println!</span>(<span class="string">"🔄 Refreshed share for key: {:?}"</span>, key);
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Executes the share registration logic asynchronously.
 ///
 /// This function checks for the existence of a share in the database and registers a new
-/// share if it doesn&#39;t exist or if the sender is the owner. It then sends a response back
+/// share if it doesn't exist or if the sender is the owner. It then sends a response back
 /// to the network client.
 ///
 /// # Arguments
@@ -554,13 +556,13 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// check if the share already exists and if so, check that the peer requesting the share is the owner
     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(share_entry) = dao.lock().unwrap().get(key)<span class="question-mark">? </span>{
-        <span class="macro">debug!</span>(<span class="string">&quot;Retrieved Entry: {:?}&quot;</span>, share_entry);
-        <span class="macro">debug!</span>(<span class="string">&quot;-- Sender: {:#?}.&quot;</span>, sender);
+        <span class="macro">debug!</span>(<span class="string">"Retrieved Entry: {:?}"</span>, share_entry);
+        <span class="macro">debug!</span>(<span class="string">"-- Sender: {:#?}."</span>, sender);
 
         <span class="comment">// check that the peer requesting the share is the owner
         </span><span class="kw">if </span>!check_share_owner(<span class="kw-2">&amp;</span>share_entry, <span class="kw-2">&amp;</span>sender) {
             <span class="macro">println!</span>(
-                <span class="string">&quot;⚠️ Share exists, not owned by sender {:?}, actual owner: {:?}&quot;</span>,
+                <span class="string">"⚠️ Share exists, not owned by sender {:?}, actual owner: {:?}"</span>,
                 sender, share_entry.sender
             );
             network_client.respond_register_share(<span class="bool-val">false</span>, channel).<span class="kw">await</span>;
@@ -569,7 +571,7 @@
     }
 
     network_client.start_providing(key.to_string()).<span class="kw">await</span>;
-    <span class="macro">debug!</span>(<span class="string">&quot;-- Sender: {:#?}.&quot;</span>, sender);
+    <span class="macro">debug!</span>(<span class="string">"-- Sender: {:#?}."</span>, sender);
     dao.lock().unwrap().insert(
         key,
         <span class="kw-2">&amp;</span>ShareEntry {
@@ -579,7 +581,7 @@
         },
     )<span class="question-mark">?</span>;
     network_client.respond_register_share(<span class="bool-val">true</span>, channel).<span class="kw">await</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;🚀 Registered share for key: {:?}.&quot;</span>, key);
+    <span class="macro">println!</span>(<span class="string">"🚀 Registered share for key: {:?}."</span>, key);
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -610,14 +612,14 @@
         .unwrap()
         .get(<span class="kw-2">&amp;</span>key)
         .unwrap()
-        .ok_or(<span class="string">&quot;Share not found&quot;</span>)<span class="question-mark">?</span>;
+        .ok_or(<span class="string">"Share not found"</span>)<span class="question-mark">?</span>;
 
-    <span class="macro">debug!</span>(<span class="string">&quot;-- Sender: {:#?}.&quot;</span>, sender);
+    <span class="macro">debug!</span>(<span class="string">"-- Sender: {:#?}."</span>, sender);
 
     <span class="comment">// check that the peer requesting the share is the owner
     </span><span class="kw">if </span>!check_share_owner(<span class="kw-2">&amp;</span>share_entry, <span class="kw-2">&amp;</span>sender) {
         <span class="macro">println!</span>(
-            <span class="string">&quot;⚠️ Share not owned by sender {:?}, actual owner: {:?}&quot;</span>,
+            <span class="string">"⚠️ Share not owned by sender {:?}, actual owner: {:?}"</span>,
             sender, share_entry.sender
         );
         network_client
@@ -628,7 +630,7 @@
     network_client
         .respond_share(share_entry.share.clone(), <span class="bool-val">true</span>, channel)
         .<span class="kw">await</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;💡 Sent share for key: {:?}.&quot;</span>, key);
+    <span class="macro">println!</span>(<span class="string">"💡 Sent share for key: {:?}."</span>, key);
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -649,12 +651,12 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Mutex&lt;Box&lt;<span class="kw">dyn </span>ShareEntryDaoTrait&gt;&gt;&gt;, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// check if the db_path is set, if so use sled, otherwise use HashMap
     </span><span class="kw">let </span>dao: Arc&lt;Mutex&lt;Box&lt;<span class="kw">dyn </span>ShareEntryDaoTrait&gt;&gt;&gt; = <span class="kw">if </span>db_path.is_some() {
-        <span class="macro">debug!</span>(<span class="string">&quot;Using Sled DB&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Using Sled DB"</span>);
         Arc::new(Mutex::new(Box::new(SledShareEntryDao::new(
             <span class="kw-2">&amp;</span>db_path.unwrap(),
         )<span class="question-mark">?</span>)))
     } <span class="kw">else </span>{
-        <span class="macro">debug!</span>(<span class="string">&quot;Using HashMap DB&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Using HashMap DB"</span>);
         Arc::new(Mutex::new(Box::new(HashMapShareEntryDao {
             map: Mutex::new(HashMap::new()),
         })))
@@ -685,7 +687,7 @@
 
     <span class="comment">// check if refresh is set, if not use a default of 30 minutes
     </span><span class="kw">let </span>refresh = refresh.unwrap_or(DEFAULT_REFRESH_SECONDS);
-    <span class="macro">debug!</span>(<span class="string">&quot;Using refresh_seconds: {}&quot;</span>, refresh);
+    <span class="macro">debug!</span>(<span class="string">"Using refresh_seconds: {}"</span>, refresh);
 
     <span class="comment">// spawn a refresh task to run every refresh_seconds seconds
     </span><span class="kw">let </span>dao_clone = Arc::clone(<span class="kw-2">&amp;</span>dao);
@@ -736,7 +738,7 @@
                     .<span class="kw">await</span>;
                 }
             },
-            e =&gt; <span class="macro">debug!</span>(<span class="string">&quot;unhandled client event: {e:?}&quot;</span>),
+            e =&gt; <span class="macro">debug!</span>(<span class="string">"unhandled client event: {e:?}"</span>),
         }
     }
 }
@@ -759,34 +761,34 @@
 ) {
     <span class="kw">loop </span>{
         interval.tick().<span class="kw">await</span>;
-        <span class="macro">debug!</span>(<span class="string">&quot;Starting refresh.&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Starting refresh."</span>);
 
         <span class="comment">// get all the shares
         </span><span class="kw">let </span>shares = dao_clone.lock().unwrap().get_all().unwrap();
-        <span class="macro">debug!</span>(<span class="string">&quot;shares: {:?}&quot;</span>, shares);
+        <span class="macro">debug!</span>(<span class="string">"shares: {:?}"</span>, shares);
 
         <span class="comment">// iterate over the shares and refresh them
         </span><span class="kw">for </span>(key, share_entry) <span class="kw">in </span>shares.iter() {
-            <span class="macro">debug!</span>(<span class="string">&quot;key: {:?}&quot;</span>, key);
-            <span class="macro">debug!</span>(<span class="string">&quot;share_entry: {:?}&quot;</span>, share_entry);
+            <span class="macro">debug!</span>(<span class="string">"key: {:?}"</span>, key);
+            <span class="macro">debug!</span>(<span class="string">"share_entry: {:?}"</span>, share_entry);
             <span class="kw">let </span>sender = PeerId::from_bytes(<span class="kw-2">&amp;</span>share_entry.sender).unwrap();
-            <span class="macro">debug!</span>(<span class="string">&quot;sender: {:?}&quot;</span>, sender);
+            <span class="macro">debug!</span>(<span class="string">"sender: {:?}"</span>, sender);
 
             <span class="comment">// determine the threshold from the share
             </span><span class="kw">let </span>secret_len = share_entry.share.<span class="number">1</span>.len();
             <span class="comment">// generate a new refresh key
             </span><span class="kw">let </span>refresh_key =
                 generate_refresh_key(share_entry.threshold <span class="kw">as </span>usize, secret_len).unwrap();
-            <span class="macro">debug!</span>(<span class="string">&quot;🔑 Refresh Key: {:#?}&quot;</span>, refresh_key);
+            <span class="macro">debug!</span>(<span class="string">"🔑 Refresh Key: {:#?}"</span>, refresh_key);
 
             <span class="comment">// get the providers for the share
             </span><span class="kw">let </span>providers = network_client_clone.get_providers(key.clone()).<span class="kw">await</span>;
             <span class="kw">if </span>providers.is_empty() {
-                <span class="macro">error!</span>(<span class="string">&quot;Could not find provider for share {key}.&quot;</span>);
+                <span class="macro">error!</span>(<span class="string">"Could not find provider for share {key}."</span>);
                 <span class="kw">continue</span>;
             }
 
-            <span class="macro">debug!</span>(<span class="string">&quot;Found {} providers for share {}.&quot;</span>, providers.len(), key);
+            <span class="macro">debug!</span>(<span class="string">"Found {} providers for share {}."</span>, providers.len(), key);
 
             <span class="comment">// refresh the share locally
             </span><span class="kw">let _ </span>= execute_refresh_share(
@@ -809,7 +811,7 @@
                 <span class="kw">let </span>k = key.clone();
                 <span class="kw">let </span>ref_key = refresh_key.clone();
                 <span class="kw">let </span><span class="kw-2">mut </span>network_client = network_client_clone.clone();
-                <span class="macro">debug!</span>(<span class="string">&quot;🔄 Refreshing share for key: {:?} to peer {:?}&quot;</span>, <span class="kw-2">&amp;</span>k, p);
+                <span class="macro">debug!</span>(<span class="string">"🔄 Refreshing share for key: {:?} to peer {:?}"</span>, <span class="kw-2">&amp;</span>k, p);
                 <span class="kw">async move </span>{
                     network_client
                         .request_refresh_shares(k, ref_key, p, sender)
@@ -821,9 +823,9 @@
             <span class="comment">// Await all of the requests and ensure they all succeed
             </span>futures::future::join_all(requests).<span class="kw">await</span>;
 
-            <span class="comment">// println!(&quot;Found {} providers for share {}.&quot;, providers.len(), key);
+            <span class="comment">// println!("Found {} providers for share {}.", providers.len(), key);
             </span><span class="macro">debug!</span>(
-                <span class="string">&quot;🔄 Refreshed {} shares for key: {:?}&quot;</span>,
+                <span class="string">"🔄 Refreshed {} shares for key: {:?}"</span>,
                 providers.len(),
                 <span class="kw-2">&amp;</span>key
             );

@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/event.rs`."><title>event.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../shard/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/event.rs`."><title>event.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../shard/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -507,7 +509,7 @@
     </span><span class="kw">pub async fn </span>run(<span class="kw-2">mut </span><span class="self">self</span>, external_address: <span class="prelude-ty">Option</span>&lt;IpAddr&gt;) {
         <span class="kw">loop </span>{
             <span class="macro">futures::select! </span>{
-                event = <span class="self">self</span>.swarm.next() =&gt; <span class="self">self</span>.handle_event(event.expect(<span class="string">&quot;Swarm stream to be infinite.&quot;</span>), external_address).<span class="kw">await</span>,
+                event = <span class="self">self</span>.swarm.next() =&gt; <span class="self">self</span>.handle_event(event.expect(<span class="string">"Swarm stream to be infinite."</span>), external_address).<span class="kw">await</span>,
                 command = <span class="self">self</span>.command_receiver.next() =&gt; <span class="kw">match </span>command {
                     <span class="prelude-val">Some</span>(c) =&gt; <span class="self">self</span>.handle_command(c).<span class="kw">await</span>,
                     <span class="comment">// Command channel closed, thus shutting down the network event loop.
@@ -534,7 +536,7 @@
                 <span class="kw">let </span>sender: oneshot::Sender&lt;()&gt; = <span class="self">self
                     </span>.pending_start_providing
                     .remove(<span class="kw-2">&amp;</span>id)
-                    .expect(<span class="string">&quot;Completed query to be previously pending.&quot;</span>);
+                    .expect(<span class="string">"Completed query to be previously pending."</span>);
                 <span class="kw">let _ </span>= sender.send(());
             }
             SwarmEvent::Behaviour(BehaviourEvent::Kademlia(
@@ -549,7 +551,7 @@
                 },
             )) =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(sender) = <span class="self">self</span>.pending_get_providers.remove(<span class="kw-2">&amp;</span>id) {
-                    sender.send(providers).expect(<span class="string">&quot;Receiver not to be dropped&quot;</span>);
+                    sender.send(providers).expect(<span class="string">"Receiver not to be dropped"</span>);
 
                     <span class="comment">// Finish the query. We are only interested in the first result.
                     </span><span class="self">self</span>.swarm
@@ -561,7 +563,7 @@
                 }
             }
             SwarmEvent::Behaviour(BehaviourEvent::Identify(e)) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Identify message: {e:?}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">"Identify message: {e:?}"</span>);
                 <span class="kw">if let </span>identify::Event::Received {
                     peer_id,
                     info:
@@ -573,7 +575,7 @@
                         },
                 } = e
                 {
-                    <span class="macro">debug!</span>(<span class="string">&quot;identify::Event::Received observed_addr: {}&quot;</span>, observed_addr);
+                    <span class="macro">debug!</span>(<span class="string">"identify::Event::Received observed_addr: {}"</span>, observed_addr);
 
                     <span class="self">self</span>.swarm.add_external_address(observed_addr);
                     
@@ -605,7 +607,7 @@
             })) =&gt; {
                 <span class="kw">let </span>address = addresses.first().to_owned();
                 <span class="comment">//this is likely useless since these peers are already in the routing table
-                </span><span class="macro">debug!</span>(<span class="string">&quot;adding peer {peer} with address {address}&quot;</span>);
+                </span><span class="macro">debug!</span>(<span class="string">"adding peer {peer} with address {address}"</span>);
                 <span class="self">self</span>.swarm
                     .behaviour_mut()
                     .kademlia
@@ -624,41 +626,41 @@
                 request_response::Message::Request {
                     request, channel, ..
                 } =&gt; {
-                    <span class="macro">debug!</span>(<span class="string">&quot;Received request: {request:?} from {channel:?}&quot;</span>);
+                    <span class="macro">debug!</span>(<span class="string">"Received request: {request:?} from {channel:?}"</span>);
                     <span class="self">self</span>.event_sender
                         .send(Event::InboundRequest {
                             request: request,
                             channel,
                         })
                         .<span class="kw">await
-                        </span>.expect(<span class="string">&quot;Event receiver not to be dropped.&quot;</span>);
+                        </span>.expect(<span class="string">"Event receiver not to be dropped."</span>);
                 }
                 request_response::Message::Response {
                     request_id,
                     response,
                 } =&gt; <span class="kw">match </span>response {
                     Response::GetShare(res) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Received response for share {}.&quot;</span>, request_id);
+                        <span class="macro">debug!</span>(<span class="string">"Received response for share {}."</span>, request_id);
                         <span class="kw">let _ </span>= <span class="self">self
                             </span>.pending_request_share
                             .remove(<span class="kw-2">&amp;</span>request_id)
-                            .expect(<span class="string">&quot;Request to still be pending.&quot;</span>)
+                            .expect(<span class="string">"Request to still be pending."</span>)
                             .send(<span class="prelude-val">Ok</span>(res.share));
                     }
                     Response::RegisterShare(res) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Received response to register share {}.&quot;</span>, res.success);
+                        <span class="macro">debug!</span>(<span class="string">"Received response to register share {}."</span>, res.success);
                         <span class="kw">let _ </span>= <span class="self">self
                             </span>.pending_register_share
                             .remove(<span class="kw-2">&amp;</span>request_id)
-                            .expect(<span class="string">&quot;Request to still be pending.&quot;</span>)
+                            .expect(<span class="string">"Request to still be pending."</span>)
                             .send(<span class="prelude-val">Ok</span>(res.success));
                     }
                     Response::RefreshShares(res) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Received response to refresh shares {}.&quot;</span>, res.success);
+                        <span class="macro">debug!</span>(<span class="string">"Received response to refresh shares {}."</span>, res.success);
                         <span class="kw">let _ </span>= <span class="self">self
                             </span>.pending_refresh_share
                             .remove(<span class="kw-2">&amp;</span>request_id)
-                            .expect(<span class="string">&quot;Request to still be pending.&quot;</span>)
+                            .expect(<span class="string">"Request to still be pending."</span>)
                             .send(<span class="prelude-val">Ok</span>(res.success));
                     }
                 },
@@ -672,7 +674,7 @@
                     ..
                 },
             )) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Request to {peer} failed with error: {error}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">"Request to {peer} failed with error: {error}"</span>);
                 <span class="kw">let _ </span>= <span class="self">self</span>.pending_register_share.remove(<span class="kw-2">&amp;</span>request_id);
                 <span class="kw">let _ </span>= <span class="self">self</span>.pending_request_share.remove(<span class="kw-2">&amp;</span>request_id);
                 <span class="kw">let _ </span>= <span class="self">self</span>.pending_refresh_share.remove(<span class="kw-2">&amp;</span>request_id);
@@ -686,7 +688,7 @@
                     ..
                 },
             )) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;InboundFailure Request failed with error: {error}, peer: {peer}, request_id: {request_id}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">"InboundFailure Request failed with error: {error}, peer: {peer}, request_id: {request_id}"</span>);
             }
 
             SwarmEvent::Behaviour(BehaviourEvent::RequestResponse(
@@ -697,14 +699,14 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(external_ip) = external_address {
                     <span class="kw">let </span>external_address = address
                         .replace(<span class="number">0</span>, |<span class="kw">_</span>| <span class="prelude-val">Some</span>(external_ip.into()))
-                        .expect(<span class="string">&quot;address.len &gt; 1 and we always return `Some`&quot;</span>);
+                        .expect(<span class="string">"address.len &gt; 1 and we always return `Some`"</span>);
 
                     <span class="self">self</span>.swarm.add_external_address(external_address);
                 }
 
                 <span class="kw">let </span>local_peer_id = <span class="kw-2">*</span><span class="self">self</span>.swarm.local_peer_id();
                 <span class="macro">debug!</span>(
-                    <span class="string">&quot;Local node is listening on {:?}&quot;</span>,
+                    <span class="string">"Local node is listening on {:?}"</span>,
                     address.with(Protocol::P2p(local_peer_id))
                 );
             }
@@ -733,7 +735,7 @@
                 peer_id: <span class="prelude-val">Some</span>(_peer_id),
                 ..
             } =&gt; {}
-            e =&gt; <span class="macro">debug!</span>(<span class="string">&quot;unhandled provider event: {e:?}&quot;</span>),
+            e =&gt; <span class="macro">debug!</span>(<span class="string">"unhandled provider event: {e:?}"</span>),
         }
     }
 

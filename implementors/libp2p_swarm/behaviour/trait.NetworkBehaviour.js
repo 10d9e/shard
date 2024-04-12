@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"shard":[["impl NetworkBehaviour for <a class=\"struct\" href=\"shard/network/struct.Behaviour.html\" title=\"struct shard::network::Behaviour\">Behaviour</a><span class=\"where fmt-newline\">where\n    Behaviour&lt;<a class=\"enum\" href=\"shard/protocol/enum.Request.html\" title=\"enum shard::protocol::Request\">Request</a>, <a class=\"enum\" href=\"shard/protocol/enum.Response.html\" title=\"enum shard::protocol::Response\">Response</a>&gt;: NetworkBehaviour,\n    Behaviour&lt;MemoryStore&gt;: NetworkBehaviour,\n    Behaviour: NetworkBehaviour,\n    Behaviour: NetworkBehaviour,</span>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

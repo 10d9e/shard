@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sss.rs`."><title>sss.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../shard/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sss.rs`."><title>sss.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="shard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../shard/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -642,26 +644,26 @@
 
 <span class="doccomment">/// Implements deserialization for `Polynomial` from a sequence of bytes,
 /// allowing Polynomials to be reconstructed from serialized data.
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>Polynomial {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>Polynomial {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="doccomment">/// A visitor to handle the deserialization of `Polynomial`.
         </span><span class="kw">struct </span>PolynomialVisitor;
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Visitor&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>PolynomialVisitor {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Visitor&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>PolynomialVisitor {
             <span class="kw">type </span>Value = Polynomial;
 
             <span class="doccomment">/// Describes what this visitor expects to find.
             </span><span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
-                formatter.write_str(<span class="string">&quot;a sequence of bytes representing polynomial coefficients&quot;</span>)
+                formatter.write_str(<span class="string">"a sequence of bytes representing polynomial coefficients"</span>)
             }
 
             <span class="doccomment">/// Visits a sequence of bytes to construct a `Polynomial`.
             </span><span class="kw">fn </span>visit_seq&lt;V&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: V) -&gt; <span class="prelude-ty">Result</span>&lt;Polynomial, V::Error&gt;
             <span class="kw">where
-                </span>V: SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
+                </span>V: SeqAccess&lt;<span class="lifetime">'de</span>&gt;,
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>coefficients = Vec::new();
                 <span class="kw">while let </span><span class="prelude-val">Some</span>(byte) = seq.next_element()<span class="question-mark">? </span>{
@@ -676,7 +678,7 @@
     }
 }
 
-<span class="doccomment">/// Splits a secret into a specified number of shares using Shamir&#39;s Secret Sharing Scheme.
+<span class="doccomment">/// Splits a secret into a specified number of shares using Shamir's Secret Sharing Scheme.
 ///
 /// # Arguments
 /// * `secret` - A byte slice representing the secret to be split.
@@ -693,7 +695,7 @@
 /// ```rust
 /// use shard::sss::split_secret;
 ///
-/// let secret = b&quot;hello world&quot;;
+/// let secret = b"hello world";
 /// let threshold = 3;
 /// let total_shares = 5;
 /// let shares = split_secret(secret, threshold, total_shares);
@@ -705,11 +707,11 @@
     shares: usize,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;u8, Vec&lt;u8&gt;&gt;, String&gt; {
     <span class="kw">if </span>threshold &lt;= <span class="number">1 </span>{
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Invalid threshold&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Invalid threshold"</span>.to_string());
     }
 
     <span class="kw">if </span>shares &lt; threshold {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Invalid count&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Invalid count"</span>.to_string());
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>shares_map: HashMap&lt;u8, Vec&lt;u8&gt;&gt; = HashMap::new();
@@ -726,7 +728,7 @@
     <span class="prelude-val">Ok</span>(shares_map)
 }
 
-<span class="doccomment">/// Combines shares to reconstruct a secret using Shamir&#39;s Secret Sharing Scheme.
+<span class="doccomment">/// Combines shares to reconstruct a secret using Shamir's Secret Sharing Scheme.
 ///
 /// # Arguments
 /// * `shares_map` - A `HashMap` where each key-value pair represents a share of the secret.
@@ -765,7 +767,7 @@
 
 <span class="doccomment">/// Performs Lagrange interpolation on a set of points to find the value of the polynomial at a specific point.
 ///
-/// This function is a key part of Shamir&#39;s Secret Sharing Scheme, enabling the reconstruction of secrets.
+/// This function is a key part of Shamir's Secret Sharing Scheme, enabling the reconstruction of secrets.
 ///
 /// # Arguments
 ///
@@ -839,16 +841,16 @@
     threshold: usize,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
     <span class="kw">if </span>threshold &lt;= <span class="number">1 </span>{
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Invalid threshold&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Invalid threshold"</span>.to_string());
     }
 
-    <span class="kw">let </span>secret_length = shares_map.values().next().ok_or(<span class="string">&quot;Empty shares map&quot;</span>)<span class="question-mark">?</span>.len();
+    <span class="kw">let </span>secret_length = shares_map.values().next().ok_or(<span class="string">"Empty shares map"</span>)<span class="question-mark">?</span>.len();
 
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..secret_length {
-        <span class="comment">// Generate a new polynomial with a zero constant term (so it doesn&#39;t change the secret)
+        <span class="comment">// Generate a new polynomial with a zero constant term (so it doesn't change the secret)
         </span><span class="kw">let </span>poly: Polynomial = Polynomial::new(threshold - <span class="number">1</span>, gf256::new(<span class="number">0</span>));
 
-        <span class="comment">// Add the new polynomial&#39;s values to the existing shares
+        <span class="comment">// Add the new polynomial's values to the existing shares
         </span><span class="kw">for </span>(<span class="kw-2">&amp;</span>key, value) <span class="kw">in </span>shares_map.iter_mut() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(y) = value.get_mut(i) {
                 <span class="kw">let </span>new_y = poly.evaluate(gf256::new(key));
@@ -866,7 +868,7 @@
 ///
 /// # Arguments
 ///
-/// * `share` - A tuple containing the share&#39;s identifier and a mutable reference to the share&#39;s value.
+/// * `share` - A tuple containing the share's identifier and a mutable reference to the share's value.
 /// * `polynomials` - A slice of `Polynomial` objects used to generate new values for refreshing the share.
 ///
 /// # Returns
@@ -890,11 +892,11 @@
 /// ```
 </span><span class="kw">pub fn </span>refresh_share(share: (<span class="kw-2">&amp;</span>u8, <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;), polynomials: <span class="kw-2">&amp;</span>[Polynomial]) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
     <span class="kw">if </span>share.<span class="number">1</span>.is_empty() {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Empty share&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Empty share"</span>.to_string());
     }
 
     <span class="kw">if </span>share.<span class="number">1</span>.len() != polynomials.len() {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Share length and polynomials length mismatch&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Share length and polynomials length mismatch"</span>.to_string());
     }
 
     <span class="kw">for </span>(i, y) <span class="kw">in </span>share.<span class="number">1</span>.iter_mut().enumerate() {
@@ -938,7 +940,7 @@
     secret_length: usize,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Polynomial&gt;, String&gt; {
     <span class="kw">if </span>threshold &lt;= <span class="number">1 </span>{
-        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Invalid threshold&quot;</span>.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"Invalid threshold"</span>.to_string());
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>polynomials = Vec::with_capacity(secret_length);
@@ -960,7 +962,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_split_and_combine_secret() {
-        <span class="kw">let </span>secret = <span class="string">&quot;test secret&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"test secret"</span>;
         <span class="kw">let </span>threshold = <span class="number">3</span>;
         <span class="kw">let </span>total_shares = <span class="number">5</span>;
 
@@ -972,7 +974,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_refresh_shares() {
-        <span class="kw">let </span>secret = <span class="string">&quot;refresh test&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"refresh test"</span>;
         <span class="kw">let </span>threshold = <span class="number">3</span>;
         <span class="kw">let </span>total_shares = <span class="number">5</span>;
 
@@ -985,7 +987,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_refresh_share_end_to_end() -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
-        <span class="kw">let </span>secret = <span class="string">&quot;refresh share end to end&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"refresh share end to end"</span>;
         <span class="kw">let </span>threshold = <span class="number">3</span>;
         <span class="kw">let </span>shares = <span class="number">5</span>;
 
@@ -995,7 +997,7 @@
         <span class="comment">// Split the secret into shares
         </span><span class="kw">let </span><span class="kw-2">mut </span>shares_map = split_secret(secret.as_bytes(), threshold, shares).unwrap();
 
-        <span class="kw">let </span>secret_length = shares_map.values().next().ok_or(<span class="string">&quot;Empty shares map&quot;</span>)<span class="question-mark">?</span>.len();
+        <span class="kw">let </span>secret_length = shares_map.values().next().ok_or(<span class="string">"Empty shares map"</span>)<span class="question-mark">?</span>.len();
         <span class="kw">let </span>polynomials = generate_refresh_key(threshold, secret_length).unwrap();
 
         <span class="comment">// Refresh each share
@@ -1014,14 +1016,14 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_invalid_threshold_and_share_count() {
-        <span class="kw">let </span>secret = <span class="string">&quot;invalid params&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"invalid params"</span>;
         <span class="macro">assert!</span>(split_secret(secret.as_bytes(), <span class="number">0</span>, <span class="number">5</span>).is_err());
         <span class="macro">assert!</span>(split_secret(secret.as_bytes(), <span class="number">6</span>, <span class="number">5</span>).is_err());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_share_uniqueness() {
-        <span class="kw">let </span>secret = <span class="string">&quot;unique shares&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"unique shares"</span>;
         <span class="kw">let </span>threshold = <span class="number">3</span>;
         <span class="kw">let </span>total_shares = <span class="number">5</span>;
 
@@ -1036,7 +1038,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_share_subset_combination() {
-        <span class="kw">let </span>secret = <span class="string">&quot;subset test&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">"subset test"</span>;
         <span class="kw">let </span>threshold = <span class="number">3</span>;
         <span class="kw">let </span>total_shares = <span class="number">5</span>;
 
@@ -1056,7 +1058,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>full_test() -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
-        <span class="kw">let </span>secret = <span class="string">b&quot;Remember what the dormouse said.&quot;</span>;
+        <span class="kw">let </span>secret = <span class="string">b"Remember what the dormouse said."</span>;
         <span class="kw">let </span>threshold = <span class="number">2</span>;
         <span class="kw">let </span>total_shares = <span class="number">5</span>;
 
@@ -1090,7 +1092,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_should_fail_with_shares_below_threshold() -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
         <span class="comment">// test should fail if the shares to reassemble are less than the threshold
-        </span><span class="kw">let </span>secret = <span class="string">b&quot;Remember what the dormouse said.&quot;</span>;
+        </span><span class="kw">let </span>secret = <span class="string">b"Remember what the dormouse said."</span>;
         <span class="kw">let </span>threshold = <span class="number">12</span>;
         <span class="kw">let </span>total_shares = <span class="number">30</span>;
 
@@ -1115,8 +1117,8 @@
         <span class="kw">let </span>recovered = combine_shares(<span class="kw-2">&amp;</span>subset);
         <span class="macro">assert!</span>(recovered.is_some());
 
-        <span class="macro">println!</span>(<span class="string">&quot;actual:    {}&quot;</span>, hex::encode(<span class="kw-2">&amp;</span>secret));
-        <span class="macro">println!</span>(<span class="string">&quot;recovered: {}&quot;</span>, hex::encode(recovered.clone().unwrap()));
+        <span class="macro">println!</span>(<span class="string">"actual:    {}"</span>, hex::encode(<span class="kw-2">&amp;</span>secret));
+        <span class="macro">println!</span>(<span class="string">"recovered: {}"</span>, hex::encode(recovered.clone().unwrap()));
 
         <span class="macro">assert_ne!</span>(recovered.unwrap().as_slice(), secret);
 
